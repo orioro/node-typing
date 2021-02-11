@@ -8,9 +8,18 @@ type ExpectedTypes = (string[] | string)
 export const getType = (value:any):string => {
   const type = typeof value
 
-  return type === 'object'
-    ? Object.prototype.toString.call(value).slice(8, -1).toLowerCase()
-    : type
+  switch (type) {
+    case 'object':
+      return Array.isArray(value)
+        ? 'array' // result is the same but for style, prefer explicitly checking for array
+        : Object.prototype.toString.call(value).slice(8, -1).toLowerCase()
+    case 'number':
+      return isNaN(value)
+        ? 'nan'
+        : 'number'
+    default:
+      return type
+  }
 }
 
 /**
