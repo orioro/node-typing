@@ -1,3 +1,15 @@
+# [1.1.0](https://github.com/orioro/node-validate-type/compare/v1.0.0...v1.1.0) (2021-02-12)
+
+
+### Bug Fixes
+
+* add nan type for NaN and add tests ([f551800](https://github.com/orioro/node-validate-type/commit/f55180033b6d0d9f37521c80a40aabc4d7257c2d))
+
+
+### Features
+
+* export ExpectedType type ([0c1678c](https://github.com/orioro/node-validate-type/commit/0c1678ccec73868ee45d9687138705a50450b1f0))
+
 # 1.0.0 (2021-02-12)
 
 
