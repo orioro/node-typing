@@ -22,7 +22,24 @@ item validation, see either:
 ##### `getType(value)`
 
 - `value` {*}
-- Returns: `type` {string} 
+- Returns: `type` {string} Possible values:
+  - string
+  - regexp
+  - number
+  - bigint
+  - nan
+  - null
+  - undefined
+  - boolean
+  - function
+  - object
+  - array
+  - date
+  - symbol
+  - map
+  - set
+  - weakmap
+  - weakset
 
 ##### `typeValidator(getType)`
 

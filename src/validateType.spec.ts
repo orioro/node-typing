@@ -41,7 +41,7 @@ describe('getType(value)', () => {
   test('nan', () => expect(getType(NaN)).toEqual('nan'))
   test('null', () => expect(getType(null)).toEqual('null'))
   test('undefined', () => expect(getType(undefined)).toEqual('undefined'))
-  test('false', () => {
+  test('boolean', () => {
     expect(getType(false)).toEqual('boolean')
     expect(getType(true)).toEqual('boolean')
   })

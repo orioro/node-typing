@@ -3,7 +3,24 @@ type ExpectedTypes = (string[] | string)
 /**
  * @function getType
  * @param {*} value
- * @returns {string} type
+ * @returns {string} type Possible values:
+ *   - string
+ *   - regexp
+ *   - number
+ *   - bigint
+ *   - nan
+ *   - null
+ *   - undefined
+ *   - boolean
+ *   - function
+ *   - object
+ *   - array
+ *   - date
+ *   - symbol
+ *   - map
+ *   - set
+ *   - weakmap
+ *   - weakset
  */
 export const getType = (value:any):string => {
   const type = typeof value
