@@ -1,4 +1,4 @@
-type ExpectedTypes = (string[] | string)
+export type ExpectedType = (string[] | string)
 
 /**
  * @function getType
@@ -48,17 +48,17 @@ export const getType = (value:any):string => {
 export const typeValidator = (
   getType:(value:any) => string
 ) => {
-  const isType = (expectedTypes:ExpectedTypes, value:any):boolean => {
+  const isType = (expectedType:ExpectedType, value:any):boolean => {
     const type = getType(value)
 
-    return Array.isArray(expectedTypes)
-      ? expectedTypes.includes(type)
-      : expectedTypes === type
+    return Array.isArray(expectedType)
+      ? expectedType.includes(type)
+      : expectedType === type
   }
 
-  const validateType = (expectedTypes:ExpectedTypes, value:any):void => {
-    if (!isType(expectedTypes, value)) {
-      throw new TypeError(`Expected \`${Array.isArray(expectedTypes) ? expectedTypes.join(' | ') : expectedTypes}\` but got \`${getType(value)}\`: ${JSON.stringify(value)}`);
+  const validateType = (expectedType:ExpectedType, value:any):void => {
+    if (!isType(expectedType, value)) {
+      throw new TypeError(`Expected \`${Array.isArray(expectedType) ? expectedType.join(' | ') : expectedType}\` but got \`${getType(value)}\`: ${JSON.stringify(value)}`);
     }
   }
 
@@ -70,9 +70,9 @@ export const typeValidator = (
 
 /**
  * @function isType
- * @param {string[] | string} expectedTypes Type or array of types that are allowed for the
- *                                          given value. Use `null` and `undefined` to allow
- *                                          these values
+ * @param {string[] | string} expectedType Type or array of types that are allowed for the
+ *                                         given value. Use `null` and `undefined` to allow
+ *                                         these values
  * @param {*} value The value whose type is being tested
  * @returns {boolean}
  */
@@ -82,9 +82,9 @@ export const typeValidator = (
  * Returns nothing (undefined) otherwise.
  * 
  * @function validateType
- * @param {string[] | string} expectedTypes Type or array of types that are allowed for the
- *                                          given value. Use `null` and `undefined` to allow
- *                                          these values
+ * @param {string[] | string} expectedType Type or array of types that are allowed for the
+ *                                         given value. Use `null` and `undefined` to allow
+ *                                         these values
  * @param {*} value The value whose type is being tested
  * @returns {undefined}
  * @throws {TypeError}
