@@ -34,57 +34,71 @@ describe('validateType(expectedTypes, value)', () => {
   })
 
   test('validateType(objectTypeMap, value)', () => {
-    const type = { key1: 'string', key2: ['number', 'string'] }
+    const objectTypeMap = { key1: 'string', key2: ['number', 'string'] }
 
     expect(
-      validateType(type, {
+      validateType(objectTypeMap, {
         key1: 'str1',
         key2: 'str2',
       })
     ).toEqual(undefined)
 
     expect(
-      validateType(type, {
+      validateType(objectTypeMap, {
         key1: 'str1',
         key2: 123,
       })
     ).toEqual(undefined)
 
     expect(() => {
-      validateType(type, {
+      validateType(objectTypeMap, undefined)
+    }).toThrow(TypeError)
+
+    expect(validateType(['undefined', objectTypeMap], undefined)).toEqual(
+      undefined
+    )
+    expect(
+      validateType(['undefined', objectTypeMap], {
+        key1: 'str1',
+        key2: 123,
+      })
+    ).toEqual(undefined)
+
+    expect(() => {
+      validateType(objectTypeMap, {
         key1: 1,
         key2: 'str2',
       })
     }).toThrow(TypeError)
 
     expect(() => {
-      validateType(type, {
+      validateType(objectTypeMap, {
         key1: 'str1',
         key2: true,
       })
     }).toThrow(TypeError)
 
     expect(() => {
-      validateType(type, 'str1')
+      validateType(objectTypeMap, 'str1')
     }).toThrow(TypeError)
 
     expect(() => {
-      validateType(type, [])
+      validateType(objectTypeMap, [])
     }).toThrow(TypeError)
   })
 
   test('validateType(objectTypeMap, value) - do not allow unknown keys', () => {
-    const type = { key1: 'string', key2: ['number', 'string'] }
+    const objectTypeMap = { key1: 'string', key2: ['number', 'string'] }
 
     expect(
-      validateType(type, {
+      validateType(objectTypeMap, {
         key1: 'str1',
         key2: 9,
       })
     ).toEqual(undefined)
 
     expect(() => {
-      validateType(type, {
+      validateType(objectTypeMap, {
         key1: 'str1',
         key2: 9,
         key3: 'some unknown key',

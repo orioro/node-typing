@@ -1,4 +1,6 @@
-export type ExpectedType = string | string[] | ExpectedTypeMap
+export type ExpectedType = string | ExpectedTypeList | ExpectedTypeMap
+
+export type ExpectedTypeList = ExpectedType[]
 
 export type ExpectedTypeMap = {
   [key: string]: ExpectedType
@@ -60,16 +62,22 @@ export const typeValidator = (
 
     switch (getType(expectedType)) {
       case 'array':
-        return (expectedType as string[]).includes(valueType)
+        return (expectedType as ExpectedType[]).some((_nestedExpectedType) =>
+          isType(_nestedExpectedType, value)
+        )
       case 'object':
         return (
           valueType === 'object' &&
-          Object.keys(value).every((key) =>
-            isType(expectedType[key], value[key])
+          Object.keys(value).every(
+            (key) =>
+              expectedType[key] !== undefined &&
+              isType(expectedType[key], value[key])
           )
         )
-      default:
+      case 'string':
         return valueType === expectedType
+      default:
+        throw new Error(`Invalid expectedType ${expectedType}`)
     }
   }
 
