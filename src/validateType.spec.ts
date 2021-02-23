@@ -72,6 +72,25 @@ describe('validateType(expectedTypes, value)', () => {
       validateType(type, [])
     }).toThrow(TypeError)
   })
+
+  test('validateType(objectTypeMap, value) - do not allow unknown keys', () => {
+    const type = { key1: 'string', key2: ['number', 'string'] }
+
+    expect(
+      validateType(type, {
+        key1: 'str1',
+        key2: 9,
+      })
+    ).toEqual(undefined)
+
+    expect(() => {
+      validateType(type, {
+        key1: 'str1',
+        key2: 9,
+        key3: 'some unknown key',
+      })
+    }).toThrow(TypeError)
+  })
 })
 
 describe('getType(value)', () => {

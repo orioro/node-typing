@@ -56,20 +56,20 @@ export const typeValidator = (
   validateType: (expectedType: ExpectedType, value: any) => void
 } => {
   const isType = (expectedType: ExpectedType, value: any): boolean => {
-    const type = getType(value)
+    const valueType = getType(value)
 
     switch (getType(expectedType)) {
       case 'array':
-        return (expectedType as string[]).includes(type)
+        return (expectedType as string[]).includes(valueType)
       case 'object':
         return (
-          type === 'object' &&
-          Object.keys(expectedType as ExpectedTypeMap).every((key) =>
+          valueType === 'object' &&
+          Object.keys(value).every((key) =>
             isType(expectedType[key], value[key])
           )
         )
       default:
-        return type === expectedType
+        return valueType === expectedType
     }
   }
 
