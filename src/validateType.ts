@@ -1,4 +1,8 @@
-export type ExpectedType = (string[] | string)
+export type ExpectedType = string | string[] | ExpectedTypeMap
+
+export type ExpectedTypeMap = {
+  [key: string]: ExpectedType
+}
 
 /**
  * @function getType
@@ -22,7 +26,9 @@ export type ExpectedType = (string[] | string)
  *   - weakmap
  *   - weakset
  */
-export const getType = (value:any):string => {
+export const getType = (
+  value: any // eslint-disable-line @typescript-eslint/explicit-module-boundary-types
+): string => {
   const type = typeof value
 
   switch (type) {
@@ -31,9 +37,7 @@ export const getType = (value:any):string => {
         ? 'array' // result is the same but for style, prefer explicitly checking for array
         : Object.prototype.toString.call(value).slice(8, -1).toLowerCase()
     case 'number':
-      return isNaN(value)
-        ? 'nan'
-        : 'number'
+      return isNaN(value) ? 'nan' : 'number'
     default:
       return type
   }
@@ -46,55 +50,69 @@ export const getType = (value:any):string => {
  * @returns {{ isType, validateType }}
  */
 export const typeValidator = (
-  getType:(value:any) => string
-) => {
-  const isType = (expectedType:ExpectedType, value:any):boolean => {
+  getType: (value: any) => string
+): {
+  isType: (expectedType: ExpectedType, value: any) => boolean
+  validateType: (expectedType: ExpectedType, value: any) => void
+} => {
+  const isType = (expectedType: ExpectedType, value: any): boolean => {
     const type = getType(value)
 
-    return Array.isArray(expectedType)
-      ? expectedType.includes(type)
-      : expectedType === type
+    switch (getType(expectedType)) {
+      case 'array':
+        return (expectedType as string[]).includes(type)
+      case 'object':
+        return (
+          type === 'object' &&
+          Object.keys(expectedType as ExpectedTypeMap).every((key) =>
+            isType(expectedType[key], value[key])
+          )
+        )
+      default:
+        return type === expectedType
+    }
   }
 
-  const validateType = (expectedType:ExpectedType, value:any):void => {
+  const validateType = (expectedType: ExpectedType, value: any): void => {
     if (!isType(expectedType, value)) {
-      throw new TypeError(`Expected \`${Array.isArray(expectedType) ? expectedType.join(' | ') : expectedType}\` but got \`${getType(value)}\`: ${JSON.stringify(value)}`);
+      throw new TypeError(
+        `Expected \`${
+          Array.isArray(expectedType) ? expectedType.join(' | ') : expectedType
+        }\` but got \`${getType(value)}\`: ${JSON.stringify(value)}`
+      )
     }
   }
 
   return {
     isType,
-    validateType
+    validateType,
   }
 }
 
-/**
- * @function isType
- * @param {string[] | string} expectedType Type or array of types that are allowed for the
- *                                         given value. Use `null` and `undefined` to allow
- *                                         these values
- * @param {*} value The value whose type is being tested
- * @returns {boolean}
- */
-
-/**
- * If typing is invalid, throws TypeError.
- * Returns nothing (undefined) otherwise.
- * 
- * @function validateType
- * @param {string[] | string} expectedType Type or array of types that are allowed for the
- *                                         given value. Use `null` and `undefined` to allow
- *                                         these values
- * @param {*} value The value whose type is being tested
- * @returns {undefined}
- * @throws {TypeError}
- */
 const {
+  /**
+   * @function isType
+   * @param {string[] | string} expectedType Type or array of types that are allowed for the
+   *                                         given value. Use `null` and `undefined` to allow
+   *                                         these values
+   * @param {*} value The value whose type is being tested
+   * @returns {boolean}
+   */
   isType,
-  validateType
+
+  /**
+   * If typing is invalid, throws TypeError.
+   * Returns nothing (undefined) otherwise.
+   *
+   * @function validateType
+   * @param {string[] | string} expectedType Type or array of types that are allowed for the
+   *                                         given value. Use `null` and `undefined` to allow
+   *                                         these values
+   * @param {*} value The value whose type is being tested
+   * @returns {undefined}
+   * @throws {TypeError}
+   */
+  validateType,
 } = typeValidator(getType)
 
-export {
-  isType,
-  validateType
-}
+export { isType, validateType }

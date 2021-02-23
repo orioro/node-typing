@@ -16,8 +16,8 @@ item validation, see either:
 
 - [`getType(value)`](#gettypevalue)
 - [`typeValidator(getType)`](#typevalidatorgettype)
-- [`isType(expectedTypes, value)`](#istypeexpectedtypes-value)
-- [`validateType(expectedTypes, value)`](#validatetypeexpectedtypes-value)
+- [`isType(expectedType, value)`](#istypeexpectedtype-value)
+- [`validateType(expectedType, value)`](#validatetypeexpectedtype-value)
 
 ##### `getType(value)`
 
@@ -44,19 +44,19 @@ item validation, see either:
 ##### `typeValidator(getType)`
 
 - `getType` {Function}
-- Returns: {{ [isType](#istypeexpectedtypes-value), [validateType](#validatetypeexpectedtypes-value) }} 
+- Returns: {{ [isType](#istypeexpectedtype-value), [validateType](#validatetypeexpectedtype-value) }} 
 
-##### `isType(expectedTypes, value)`
+##### `isType(expectedType, value)`
 
-- `expectedTypes` {string[] | string}
+- `expectedType` {string[] | string}
 - `value` {*}
 - Returns: {boolean} 
 
-##### `validateType(expectedTypes, value)`
+##### `validateType(expectedType, value)`
 
 If typing is invalid, throws TypeError.
 Returns nothing (undefined) otherwise.
 
-- `expectedTypes` {string[] | string}
+- `expectedType` {string[] | string}
 - `value` {*}
 - Returns: {undefined}
