@@ -45,6 +45,8 @@ export const getType = (
   }
 }
 
+export const TYPE_ANY = 'any'
+
 /**
  * @function typeValidator
  * @param {Function} getType Callback function that receives a value and
@@ -52,7 +54,8 @@ export const getType = (
  * @returns {{ isType, validateType }}
  */
 export const typeValidator = (
-  getType: (value: any) => string
+  getType: (value: any) => string,
+  anyType: string = TYPE_ANY
 ): {
   isType: (expectedType: ExpectedType, value: any) => boolean
   validateType: (expectedType: ExpectedType, value: any) => void
@@ -60,24 +63,28 @@ export const typeValidator = (
   const isType = (expectedType: ExpectedType, value: any): boolean => {
     const valueType = getType(value)
 
-    switch (getType(expectedType)) {
-      case 'array':
-        return (expectedType as ExpectedType[]).some((_nestedExpectedType) =>
-          isType(_nestedExpectedType, value)
-        )
-      case 'object':
-        return (
-          valueType === 'object' &&
-          Object.keys(value).every(
-            (key) =>
-              expectedType[key] !== undefined &&
-              isType(expectedType[key], value[key])
+    if (expectedType === anyType) {
+      return true
+    } else {
+      switch (getType(expectedType)) {
+        case 'array':
+          return (expectedType as ExpectedType[]).some((_nestedExpectedType) =>
+            isType(_nestedExpectedType, value)
           )
-        )
-      case 'string':
-        return valueType === expectedType
-      default:
-        throw new Error(`Invalid expectedType ${expectedType}`)
+        case 'object':
+          return (
+            valueType === 'object' &&
+            Object.keys(value).every(
+              (key) =>
+                expectedType[key] !== undefined &&
+                isType(expectedType[key], value[key])
+            )
+          )
+        case 'string':
+          return valueType === expectedType
+        default:
+          throw new Error(`Invalid expectedType ${expectedType}`)
+      }
     }
   }
 

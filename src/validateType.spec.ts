@@ -105,6 +105,41 @@ describe('validateType(expectedTypes, value)', () => {
       })
     }).toThrow(TypeError)
   })
+
+  test('type: any', () => {
+    const values = [
+      undefined,
+      null,
+      'some string',
+      9,
+      true,
+      false,
+      NaN,
+      Symbol(),
+      () => {}, // eslint-disable-line @typescript-eslint/no-empty-function
+      function () {}, // eslint-disable-line @typescript-eslint/no-empty-function
+      new Date(),
+      new Map(),
+      new WeakMap(),
+      new Set(),
+      new WeakSet(),
+    ]
+
+    values.forEach((value) => {
+      expect(validateType('any', value)).toEqual(undefined)
+
+      expect(
+        validateType(
+          {
+            key: 'any',
+          },
+          {
+            key: value,
+          }
+        )
+      ).toEqual(undefined)
+    })
+  })
 })
 
 describe('getType(value)', () => {
