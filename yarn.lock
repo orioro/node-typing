@@ -1444,6 +1444,11 @@
     "@octokit/openapi-types" "^4.0.0"
     "@types/node" ">= 8"
 
+"@orioro/cascade@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@orioro/cascade/-/cascade-3.0.0.tgz#8d839804e9f7436ff1b77636e9133e02a7f815be"
+  integrity sha512-4Tm5k6m2vc2XaKLuWxSi7aGUUlkjFLZBrLN7ehx5ZieFZES9jVUkkraKtkMUPsSi76RikAoLS9xUoAiapo3B9g==
+
 "@orioro/cascade@^3.0.0-beta.2":
   version "3.0.0-beta.2"
   resolved "https://registry.yarnpkg.com/@orioro/cascade/-/cascade-3.0.0-beta.2.tgz#61cfafc41e80b21e8fd034cd33261a51e491d1d9"

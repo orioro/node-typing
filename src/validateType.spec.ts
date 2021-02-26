@@ -83,6 +83,16 @@ describe('validateType(expectedTypes, value)', () => {
     }).toThrow(TypeError)
 
     expect(() => {
+      validateType(objectTypeMap, {
+        key1: 'str1',
+      })
+    }).toThrow(TypeError)
+
+    expect(() => {
+      validateType(objectTypeMap, {})
+    }).toThrow(TypeError)
+
+    expect(() => {
       validateType(objectTypeMap, [])
     }).toThrow(TypeError)
   })
@@ -169,8 +179,10 @@ describe('getType(value)', () => {
   test('object {}', () => {
     expect(getType({})).toEqual('object')
 
-    function ConstructorA() {} // eslint-disable-line @typescript-eslint/no-empty-function
-    expect(getType(new ConstructorA())).toEqual('object')
+    expect(() => {
+      function ConstructorA() {} // eslint-disable-line @typescript-eslint/no-empty-function
+      expect(getType(new ConstructorA())).toEqual('object')
+    }).toThrow('Could not identify value type: [object Object]')
   })
   test('array []', () => expect(getType([])).toEqual('array'))
   test('date', () => expect(getType(new Date())).toEqual('date'))
