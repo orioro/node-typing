@@ -1,8 +1,8 @@
-# validateType
+# typing
 
 ```
-npm install @orioro/validate-type
-yarn add @orioro/validate-type
+npm install @orioro/typing
+yarn add @orioro/typing
 ```
 
 Simple type validation utilities. Meant for checking types of argument input
@@ -14,12 +14,12 @@ item validation, see either:
 
 # API Docs
 
-- [`typeValidator(types)`](#typevalidatortypes)
+- [`typing(types)`](#typingtypes)
 - [`isType(expectedType, value)`](#istypeexpectedtype-value)
 - [`validateType(expectedType, value)`](#validatetypeexpectedtype-value)
 - [`getType(value)`](#gettypevalue)
 
-##### `typeValidator(types)`
+##### `typing(types)`
 
 - `types` {TypeAlternatives | TypeMap}
 - Returns: {{ [isType](#istypeexpectedtype-value), [validateType](#validatetypeexpectedtype-value), [getType](#gettypevalue) }} 

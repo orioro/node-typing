@@ -2,7 +2,7 @@
   "name": "@orioro/typing",
   "version": "0.0.0-semantic-release",
   "description": "Simple type validation utilities. Meant for checking types of argument input in microlibraries.",
-  "keywords": [],
+  "keywords": ["type", "validation", "typing"],
   "homepage": "https://github.com/orioro/node-typing",
   "bugs": "https://github.com/orioro/node-typing/issues",
   "repository": {
@@ -27,7 +27,7 @@
     "prettier": "prettier src",
     "ci-check": "yarn test && yarn tsc:validate && yarn lint"
   },
-  "author": "",
+  "author": "Simon Fan <simon@orioro.design>",
   "license": "ISC",
   "files": [
     "dist/**/*"
