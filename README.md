@@ -14,15 +14,35 @@ item validation, see either:
 
 # API Docs
 
-- [`getType(value)`](#gettypevalue)
-- [`typeValidator(getType)`](#typevalidatorgettype)
+- [`typeValidator(types)`](#typevalidatortypes)
 - [`isType(expectedType, value)`](#istypeexpectedtype-value)
 - [`validateType(expectedType, value)`](#validatetypeexpectedtype-value)
+- [`getType(value)`](#gettypevalue)
+
+##### `typeValidator(types)`
+
+- `types` {TypeAlternatives | TypeMap}
+- Returns: {{ [isType](#istypeexpectedtype-value), [validateType](#validatetypeexpectedtype-value), [getType](#gettypevalue) }} 
+
+##### `isType(expectedType, value)`
+
+- `expectedType` {ExpectedType}
+- `value` {*}
+- Returns: {boolean} 
+
+##### `validateType(expectedType, value)`
+
+If typing is invalid, throws TypeError.
+Returns nothing (undefined) otherwise.
+
+- `expectedType` {string[] | string}
+- `value` {*}
+- Returns: {undefined} 
 
 ##### `getType(value)`
 
 - `value` {*}
-- Returns: `type` {string} Possible values:
+- Returns: `type` {string} Possible values for default configuration:
   - string
   - regexp
   - number
@@ -40,23 +60,3 @@ item validation, see either:
   - set
   - weakmap
   - weakset
-
-##### `typeValidator(getType)`
-
-- `getType` {Function}
-- Returns: {{ [isType](#istypeexpectedtype-value), [validateType](#validatetypeexpectedtype-value) }} 
-
-##### `isType(expectedType, value)`
-
-- `expectedType` {string[] | string}
-- `value` {*}
-- Returns: {boolean} 
-
-##### `validateType(expectedType, value)`
-
-If typing is invalid, throws TypeError.
-Returns nothing (undefined) otherwise.
-
-- `expectedType` {string[] | string}
-- `value` {*}
-- Returns: {undefined}

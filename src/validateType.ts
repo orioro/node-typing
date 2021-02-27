@@ -25,7 +25,7 @@ export type TypeMap = {
 
 export const TYPE_ANY = 'any'
 
-const CORE_TYPES: TypeMap = {
+export const CORE_TYPES: TypeMap = {
   string: (value) => typeof value === 'string',
   regexp: (value) => value instanceof RegExp,
   // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isNaN
@@ -52,12 +52,16 @@ const CORE_TYPES: TypeMap = {
  * @returns {{ isType, validateType, getType }}
  */
 export const typeValidator = (
-  types: TypeAlternatives | TypeMap = []
+  types: TypeAlternatives | TypeMap
 ): {
   getType: (value: any) => string
   isType: (expectedType: ExpectedType, value: any) => boolean
   validateType: (expectedType: ExpectedType, value: any) => void
 } => {
+  if (!Array.isArray(types) && !isPlainObject(types)) {
+    throw new TypeError(`Expected types to be array or object, got: ${types}`)
+  }
+
   //
   // TypeAlternatives structure is better suited for `getType(value)`
   // as it is an array with explicit order
@@ -95,12 +99,13 @@ export const typeValidator = (
         isType(_nestedExpectedType, value)
       )
     } else if (isPlainObject(expectedType)) {
-      const valueKeys = Object.keys(value)
       const expectedKeys = Object.keys(expectedType)
 
       return (
         (isPlainObject(value) || Array.isArray(value)) &&
-        valueKeys.every((valueKey) => expectedKeys.includes(valueKey + '')) &&
+        Object.keys(value).every((valueKey) =>
+          expectedKeys.includes(valueKey)
+        ) &&
         expectedKeys.every((expectedKey) =>
           isType(expectedType[expectedKey], value[expectedKey])
         )
@@ -113,12 +118,12 @@ export const typeValidator = (
       const typeTest = _typeMap[expectedType as string]
 
       if (typeof typeTest !== 'function') {
-        throw new Error(`Invalid expectedType ${expectedType}`)
+        throw new Error(`Invalid expectedType: ${expectedType}`)
       }
 
       return typeTest(value)
     } else {
-      throw new Error(`Invalid expectedType ${expectedType}`)
+      throw new Error(`Invalid expectedType: ${expectedType}`)
     }
   }
 

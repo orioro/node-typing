@@ -1463,6 +1463,13 @@
     lodash "^4.17.20"
     luxon "^1.25.0"
 
+"@orioro/jest-util@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@orioro/jest-util/-/jest-util-1.2.0.tgz#259106451a41dcc99e30b745a30a1479b5b630be"
+  integrity sha512-8eU4CI0D0iGYBWvTb0uOGMj4i7kSISX8O8BlhGnrtdyCuh21+oEUOygsdgazv9vZRqUm5V2RnbjbJ2AvxLcXDQ==
+  dependencies:
+    is-plain-object "^5.0.0"
+
 "@orioro/readme@^1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@orioro/readme/-/readme-1.0.1.tgz#34ce761eb97e6a5184c6fdb6f8b95179236f9e0a"
