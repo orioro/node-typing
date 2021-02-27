@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`public api 1`] = `
+Array [
+  "TYPE_ANY",
+  "CORE_TYPES",
+  "typing",
+  "getType",
+  "isType",
+  "validateType",
+]
+`;

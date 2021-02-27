@@ -107,11 +107,11 @@ const _getType = (typeAlternatives: TypeAlternatives, value: any): string => {
 }
 
 /**
- * @function typeValidator
+ * @function typing
  * @param {TypeAlternatives | TypeMap} types Definition of the types to be considered
  * @returns {{ isType, validateType, getType }}
  */
-export const typeValidator = (
+export const typing = (
   types: TypeAlternatives | TypeMap
 ): {
   getType: (value: any) => string
@@ -200,6 +200,6 @@ export const typeValidator = (
   }
 }
 
-const { isType, validateType, getType } = typeValidator(CORE_TYPES)
+const { isType, validateType, getType } = typing(CORE_TYPES)
 
 export { getType, isType, validateType }

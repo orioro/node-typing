@@ -1,13 +1,13 @@
 {
-  "name": "@orioro/validate-type",
+  "name": "@orioro/typing",
   "version": "0.0.0-semantic-release",
   "description": "Simple type validation utilities. Meant for checking types of argument input in microlibraries.",
   "keywords": [],
-  "homepage": "https://github.com/orioro/node-validate-type",
-  "bugs": "https://github.com/orioro/node-validate-type/issues",
+  "homepage": "https://github.com/orioro/node-typing",
+  "bugs": "https://github.com/orioro/node-typing/issues",
   "repository": {
     "type": "git",
-    "url": "https://github.com/orioro/node-validate-type.git"
+    "url": "https://github.com/orioro/node-typing.git"
   },
   "main": "dist/index.js",
   "module": "dist/index.mjs",

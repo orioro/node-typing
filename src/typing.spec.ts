@@ -1,10 +1,5 @@
 import { testCases, fnCallLabel, variableName } from '@orioro/jest-util'
-import {
-  getType,
-  validateType,
-  CORE_TYPES,
-  typeValidator,
-} from './validateType'
+import { getType, validateType, CORE_TYPES, typing } from './typing'
 
 const CORE_TYPE_NAMES = Object.keys(CORE_TYPES)
 
@@ -284,9 +279,9 @@ describe('validateType(typeName, value)', () => {
   })
 })
 
-describe('typeValidator(types)', () => {
+describe('typing(types)', () => {
   test('types is required', () => {
-    expect(() => typeValidator(undefined)).toThrow(TypeError)
+    expect(() => typing(undefined)).toThrow(TypeError)
   })
 
   const describeIsType = (isType) => {
@@ -349,7 +344,7 @@ describe('typeValidator(types)', () => {
     })
   }
 
-  describe('typeValidator(types: TypeMap)', () => {
+  describe('typing(types: TypeMap)', () => {
     const types = {
       alphaNumericString: (value) =>
         typeof value === 'string' && /^[a-zA-Z0-9]+$/.test(value),
@@ -357,14 +352,14 @@ describe('typeValidator(types)', () => {
       number: (value) => typeof value === 'number',
     }
 
-    const { isType, getType, validateType } = typeValidator(types)
+    const { isType, getType, validateType } = typing(types)
 
     describeIsType(isType)
     describeGetType(getType)
     describeValidateType(validateType)
   })
 
-  describe('typeValidator(types: TypeAlternatives)', () => {
+  describe('typing(types: TypeAlternatives)', () => {
     const types = [
       [
         (value) => typeof value === 'string' && /^[a-zA-Z0-9]+$/.test(value),
@@ -374,7 +369,7 @@ describe('typeValidator(types)', () => {
       [(value) => typeof value === 'number', 'number'],
     ]
 
-    const { isType, getType, validateType } = typeValidator(types)
+    const { isType, getType, validateType } = typing(types)
 
     describeIsType(isType)
     describeGetType(getType)
