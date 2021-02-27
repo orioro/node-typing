@@ -46,6 +46,66 @@ export const CORE_TYPES: TypeMap = {
   weakset: (value) => value instanceof WeakSet,
 }
 
+const _isType = (
+  typeMap: TypeMap,
+  expectedType: ExpectedType,
+  value: any
+): boolean => {
+  if (Array.isArray(expectedType)) {
+    return (expectedType as ExpectedType[]).some((_nestedExpectedType) =>
+      isType(_nestedExpectedType, value)
+    )
+  } else if (isPlainObject(expectedType)) {
+    const expectedKeys = Object.keys(expectedType)
+
+    return (
+      (isPlainObject(value) || Array.isArray(value)) &&
+      Object.keys(value).every((valueKey) => expectedKeys.includes(valueKey)) &&
+      expectedKeys.every((expectedKey) =>
+        isType(expectedType[expectedKey], value[expectedKey])
+      )
+    )
+  } else if (typeof expectedType === 'string') {
+    if (expectedType === TYPE_ANY) {
+      return true
+    }
+
+    const typeTest = typeMap[expectedType as string]
+
+    if (typeof typeTest !== 'function') {
+      throw new Error(`Invalid expectedType: ${expectedType}`)
+    }
+
+    return typeTest(value)
+  } else {
+    throw new Error(`Invalid expectedType: ${expectedType}`)
+  }
+}
+
+const _validateType = (
+  typeMap: TypeMap,
+  expectedType: ExpectedType,
+  value: any
+): void => {
+  if (!_isType(typeMap, expectedType, value)) {
+    throw new TypeError(
+      `Expected \`${
+        Array.isArray(expectedType) ? expectedType.join(' | ') : expectedType
+      }\` but got \`${getType(value)}\`: ${JSON.stringify(value)}`
+    )
+  }
+}
+
+const _getType = (typeAlternatives: TypeAlternatives, value: any): string => {
+  const type = cascadeFind(test, typeAlternatives, value)
+
+  if (type === undefined) {
+    throw new Error(`Could not identify value type: ${value}`)
+  }
+
+  return type
+}
+
 /**
  * @function typeValidator
  * @param {TypeAlternatives | TypeMap} types Definition of the types to be considered
@@ -93,39 +153,7 @@ export const typeValidator = (
    * @param {*} value The value whose type is being tested
    * @returns {boolean}
    */
-  const isType = (expectedType: ExpectedType, value: any): boolean => {
-    if (Array.isArray(expectedType)) {
-      return (expectedType as ExpectedType[]).some((_nestedExpectedType) =>
-        isType(_nestedExpectedType, value)
-      )
-    } else if (isPlainObject(expectedType)) {
-      const expectedKeys = Object.keys(expectedType)
-
-      return (
-        (isPlainObject(value) || Array.isArray(value)) &&
-        Object.keys(value).every((valueKey) =>
-          expectedKeys.includes(valueKey)
-        ) &&
-        expectedKeys.every((expectedKey) =>
-          isType(expectedType[expectedKey], value[expectedKey])
-        )
-      )
-    } else if (typeof expectedType === 'string') {
-      if (expectedType === TYPE_ANY) {
-        return true
-      }
-
-      const typeTest = _typeMap[expectedType as string]
-
-      if (typeof typeTest !== 'function') {
-        throw new Error(`Invalid expectedType: ${expectedType}`)
-      }
-
-      return typeTest(value)
-    } else {
-      throw new Error(`Invalid expectedType: ${expectedType}`)
-    }
-  }
+  const isType = _isType.bind(null, _typeMap)
 
   /**
    * If typing is invalid, throws TypeError.
@@ -139,15 +167,7 @@ export const typeValidator = (
    * @returns {undefined}
    * @throws {TypeError}
    */
-  const validateType = (expectedType: ExpectedType, value: any): void => {
-    if (!isType(expectedType, value)) {
-      throw new TypeError(
-        `Expected \`${
-          Array.isArray(expectedType) ? expectedType.join(' | ') : expectedType
-        }\` but got \`${getType(value)}\`: ${JSON.stringify(value)}`
-      )
-    }
-  }
+  const validateType = _validateType.bind(null, _typeMap)
 
   /**
    * @function getType
@@ -171,15 +191,7 @@ export const typeValidator = (
    *   - weakmap
    *   - weakset
    */
-  const getType = (value: any): string => {
-    const type = cascadeFind(test, _typeAlternatives, value)
-
-    if (type === undefined) {
-      throw new Error(`Could not identify value type: ${value}`)
-    }
-
-    return type
-  }
+  const getType = _getType.bind(null, _typeAlternatives)
 
   return {
     isType,
