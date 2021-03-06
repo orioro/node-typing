@@ -14,10 +14,77 @@ item validation, see either:
 
 # API Docs
 
+- [`_getType()`](#_gettype)
+- [`_isType()`](#_istype)
+- [`anyType`](#anytype)
+- [`singleType(type)`](#singletypetype)
+- [`oneOfTypes(types)`](#oneoftypestypes)
+- [`enumType(values)`](#enumtypevalues)
+- [`indefiniteArrayOfType(itemType)`](#indefinitearrayoftypeitemtype)
+- [`indefiniteObjectOfType(propertyType)`](#indefiniteobjectoftypepropertytype)
+- [`tupleType(items)`](#tupletypeitems)
+- [`objectType(properties)`](#objecttypeproperties)
+- [`castTypeSpec(value)`](#casttypespecvalue)
 - [`typing(types)`](#typingtypes)
 - [`isType(expectedType, value)`](#istypeexpectedtype-value)
 - [`validateType(expectedType, value)`](#validatetypeexpectedtype-value)
 - [`getType(value)`](#gettypevalue)
+- [`_validateType()`](#_validatetype)
+
+##### `anyType`
+
+Constant to be used to express that any type is allowed:
+- `isType` always returns true
+- `validateType` never throws
+
+
+
+##### `singleType(type)`
+
+- `type` {String}
+- Returns: {SingleTypeSpec} 
+
+##### `oneOfTypes(types)`
+
+- `types` {TypeSpec[]}
+- Returns: {OneOfTypesSpec} 
+
+##### `enumType(values)`
+
+- `values` {*[]}
+- Returns: {EnumTypeSpec} 
+
+##### `indefiniteArrayOfType(itemType)`
+
+- `itemType` {TypeSpec}
+- Returns: {IndefiniteArrayOfTypeSpec} 
+
+##### `indefiniteObjectOfType(propertyType)`
+
+- `propertyType` {TypeSpec}
+- Returns: {IndefiniteObjectOfTypeSpec} 
+
+##### `tupleType(items)`
+
+- `items` {TypeSpec[]}
+- Returns: {TupleTypeSpec} 
+
+##### `objectType(properties)`
+
+- `properties` {Object}
+- Returns: {ObjectTypeSpec} 
+
+##### `castTypeSpec(value)`
+
+Attempts to cast a value into a TypeSpec object:
+- if an `ObjectTypeSpec`, simply return the value itself
+- if a `string`, converts it into a `SingleTypeSpec`
+- if an `array`, converts it into an `OneOfTypesSpec`
+- if a `plain object`, converts it into an `ObjectTypeSpec`
+- otherwise returns `null` upon casting failure
+
+- `value` {*}
+- Returns: {TypeSpec | null} 
 
 ##### `typing(types)`
 
@@ -26,7 +93,7 @@ item validation, see either:
 
 ##### `isType(expectedType, value)`
 
-- `expectedType` {ExpectedType}
+- `expectedType` {TypeSpec}
 - `value` {*}
 - Returns: {boolean} 
 
@@ -60,3 +127,17 @@ Returns nothing (undefined) otherwise.
   - set
   - weakmap
   - weakset
+
+
+
+## Private methods
+
+##### `_getType()`
+
+
+
+##### `_isType()`
+
+
+
+##### `_validateType()`

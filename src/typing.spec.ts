@@ -1,5 +1,11 @@
 import { testCases, fnCallLabel, variableName } from '@orioro/jest-util'
 import { getType, validateType, CORE_TYPES, typing } from './typing'
+import {
+  tupleType,
+  enumType,
+  indefiniteArrayOfType,
+  indefiniteObjectOfType,
+} from './typeSpec'
 
 const CORE_TYPE_NAMES = Object.keys(CORE_TYPES)
 
@@ -15,7 +21,7 @@ const TYPE_SAMPLES = {
   function: [function () {}, function namedFunc() {}, () => {}],
   array: [[], ['1', '2', '3']],
   object: [{}, { key1: 'value1', key2: 'value2' }],
-  bigint: [2n],
+  bigint: [BigInt(9007199254740991)],
   date: [new Date()],
   symbol: [Symbol(), Symbol('symbolname')],
   map: [new Map()],
@@ -43,16 +49,39 @@ describe('validateType(multipleTypes, value)', () => {
   )
 })
 
-describe('validateType(objectTypeMap, value)', () => {
+describe('validateType(enum, value)', () => {
+  const expectedType = enumType([
+    'SOME_STRING',
+    10,
+    [1, 2, 3],
+    { key1: 'value1', key2: 'value2' },
+  ])
+
+  testCases(
+    [
+      [expectedType, 'SOME_STRING', undefined],
+      [expectedType, 'ANOTHER_STR', TypeError],
+      [expectedType, 10, undefined],
+      [expectedType, 11, TypeError],
+      [expectedType, [1, 2, 3], undefined],
+      [expectedType, [1, 2, 3, 4], TypeError],
+      [expectedType, { key1: 'value1', key2: 'value2' }, undefined],
+      [expectedType, { key1: 'value1' }, TypeError],
+    ],
+    validateType
+  )
+})
+
+describe('validateType(objectTypeSpec, value)', () => {
   const _renderLabel = (args, result) =>
     fnCallLabel(
       'validateType',
-      [variableName('objectTypeMap'), ...args],
+      [variableName('objectTypeSpec'), ...args],
       result
     )
 
   describe('valid situations', () => {
-    const objectTypeMap = {
+    const objectTypeSpec = {
       key1: 'string',
       key2: ['number', 'string'],
     }
@@ -61,13 +90,13 @@ describe('validateType(objectTypeMap, value)', () => {
         [{ key1: 'str1', key2: 'str2' }, undefined],
         [{ key1: 'str1', key2: 123 }, undefined],
       ],
-      validateType.bind(null, objectTypeMap),
+      validateType.bind(null, objectTypeSpec),
       _renderLabel
     )
   })
 
   describe('simple situations', () => {
-    const objectTypeMap = {
+    const objectTypeSpec = {
       key1: 'string',
       key2: ['number', 'string'],
     }
@@ -78,13 +107,13 @@ describe('validateType(objectTypeMap, value)', () => {
         [undefined, TypeError],
         ['Some str', TypeError],
       ],
-      validateType.bind(null, objectTypeMap),
+      validateType.bind(null, objectTypeSpec),
       _renderLabel
     )
   })
 
   describe('only allow known keys', () => {
-    const objectTypeMap = {
+    const objectTypeSpec = {
       key1: 'string',
       key2: ['number', 'string'],
     }
@@ -99,19 +128,19 @@ describe('validateType(objectTypeMap, value)', () => {
         // Missing key1 and key2
         [{}, TypeError],
 
-        // Missing key1 and key2 (arrays are allowed in objectTypeMap)
+        // Missing key1 and key2 (arrays are allowed in objectTypeSpec)
         [[], TypeError],
 
         // Unknown key3
         [{ key1: 'str1', key2: 'str2', key3: 'str3' }, TypeError],
       ],
-      validateType.bind(null, objectTypeMap),
+      validateType.bind(null, objectTypeSpec),
       _renderLabel
     )
   })
 
   describe('allow undefined', () => {
-    const objectTypeMap = {
+    const objectTypeSpec = {
       key1: 'string',
       key2: ['number', 'string'],
     }
@@ -124,18 +153,18 @@ describe('validateType(objectTypeMap, value)', () => {
         [{ key1: 123, key2: 123 }, TypeError],
         ['Some str', TypeError],
       ],
-      (value) => validateType([objectTypeMap, 'undefined'], value),
+      (value) => validateType([objectTypeSpec, 'undefined'], value),
       (args, result) =>
         fnCallLabel(
           'validateType',
-          [[variableName('objectTypeMap'), 'undefined'], ...args],
+          [[variableName('objectTypeSpec'), 'undefined'], ...args],
           result
         )
     )
   })
 
   describe('deep nesting', () => {
-    const objectTypeMap = {
+    const objectTypeSpec = {
       key1: 'string',
       key2: {
         key21: 'string',
@@ -181,42 +210,111 @@ describe('validateType(objectTypeMap, value)', () => {
           TypeError,
         ],
       ],
-      validateType.bind(null, objectTypeMap),
+      validateType.bind(null, objectTypeSpec),
       _renderLabel
     )
   })
 })
 
-describe('validateType(arrayTupleMap, value)', () => {
+describe('validateType(tupleType, value)', () => {
   describe('simple tuple', () => {
-    const arrayTupleMap = {
-      '0': 'string',
-      '1': 'number',
-    }
+    const expectedType = tupleType(['string', 'number'])
 
     testCases(
       [
-        [arrayTupleMap, ['str', 8], undefined],
-        [arrayTupleMap, ['str', 'str'], TypeError],
-        [arrayTupleMap, ['str'], TypeError],
-        [arrayTupleMap, [undefined, 8], TypeError],
+        [expectedType, ['str', 8], undefined],
+        [expectedType, ['str', 'str'], TypeError],
+        [expectedType, ['str'], TypeError],
+        [expectedType, [undefined, 8], TypeError],
+      ],
+      validateType
+    )
+  })
+})
+
+describe('validateType(indefiniteArrayOfType, value)', () => {
+  describe('array of single type', () => {
+    const expectedType = indefiniteArrayOfType('string')
+
+    testCases(
+      [
+        [expectedType, ['str1', 'str2', 'str3'], undefined],
+        [expectedType, ['str1', 'str2', ''], undefined],
+        [expectedType, ['str1'], undefined],
+        [expectedType, [], undefined],
+        [expectedType, ['str', 8], TypeError],
+        [expectedType, 'str', TypeError],
+        [expectedType, { '0': 'str1', '1': 'str2' }, TypeError],
       ],
       validateType
     )
   })
 
-  describe('impossible to satisfy', () => {
-    const arrayTupleMap = {
-      // '0': 'string',
-      '1': 'number',
-    }
+  describe('array of one-of types', () => {
+    const expectedType = indefiniteArrayOfType(['string', 'number'])
 
     testCases(
       [
-        [arrayTupleMap, ['str', 8], TypeError],
-        [arrayTupleMap, ['str', 'str'], TypeError],
-        [arrayTupleMap, ['str'], TypeError],
-        [arrayTupleMap, [undefined, 8], TypeError],
+        [expectedType, ['str1', 'str2', 'str3'], undefined],
+        [expectedType, ['str1', 'str2', 5], undefined],
+        [expectedType, [1, 5], undefined],
+        [expectedType, [], undefined],
+        [expectedType, [1, 5, 'str', true], TypeError],
+      ],
+      validateType
+    )
+  })
+})
+
+describe('validateType(indefiniteObjectOfType, value)', () => {
+  describe('object w/ any number of properties whose value are all strings', () => {
+    const expectedType = indefiniteObjectOfType('string')
+
+    testCases(
+      [
+        [expectedType, { key: 'str' }, undefined],
+        [expectedType, { key1: 'str1', key2: 'str2' }, undefined],
+        [expectedType, {}, undefined],
+        [expectedType, { key1: 'str1', key2: 8 }, TypeError],
+      ],
+      validateType
+    )
+  })
+
+  describe('nested objects', () => {
+    const expectedType = indefiniteObjectOfType({
+      kind: 'string',
+      numeric: 'number',
+      numericOrText: ['number', 'string'],
+    })
+
+    testCases(
+      [
+        [
+          expectedType,
+          {
+            key1: { kind: 'kind1', numeric: 10, numericOrText: 'text' },
+            key2: { kind: 'kind2', numeric: 60, numericOrText: 9 },
+          },
+          undefined,
+        ],
+        [expectedType, {}, undefined],
+        [
+          expectedType,
+          {
+            key1: 'string',
+            key2: { kind: 'kind2', numeric: 60, numericOrText: 9 },
+          },
+          TypeError,
+        ],
+        [
+          expectedType,
+          {
+            key1: { kind: 9, numeric: 10, numericOrText: 'text' },
+            key2: { kind: 'kind2', numeric: 60, numericOrText: 9 },
+          },
+          TypeError,
+        ],
       ],
       validateType
     )
@@ -375,4 +473,19 @@ describe('typing(types)', () => {
     describeGetType(getType)
     describeValidateType(validateType)
   })
+})
+
+describe('error cases', () => {
+  const expectedType = { specType: 'unknown_spec_type' }
+
+  testCases(
+    [
+      [
+        expectedType,
+        'some-value',
+        new Error(`Invalid expectedType: ${expectedType}`),
+      ],
+    ],
+    validateType
+  )
 })

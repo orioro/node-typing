@@ -2,11 +2,27 @@
 
 exports[`public api 1`] = `
 Array [
-  "TYPE_ANY",
+  "ANY_TYPE",
   "CORE_TYPES",
-  "typing",
+  "ENUM_TYPE",
+  "INDEFINITE_ARRAY_OF_TYPE",
+  "INDEFINITE_OBJECT_OF_TYPE",
+  "OBJECT_TYPE",
+  "ONE_OF_TYPES",
+  "SINGLE_TYPE",
+  "TUPLE_TYPE",
+  "anyType",
+  "castTypeSpec",
+  "enumType",
   "getType",
+  "indefiniteArrayOfType",
+  "indefiniteObjectOfType",
   "isType",
+  "objectType",
+  "oneOfTypes",
+  "singleType",
+  "tupleType",
+  "typing",
   "validateType",
 ]
 `;
