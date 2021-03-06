@@ -1,5 +1,6 @@
 import { testCases, fnCallLabel, variableName } from '@orioro/jest-util'
 import { getType, validateType, CORE_TYPES, typing } from './typing'
+import { tupleType, enumType } from './typeSpec'
 
 const CORE_TYPE_NAMES = Object.keys(CORE_TYPES)
 
@@ -15,7 +16,7 @@ const TYPE_SAMPLES = {
   function: [function () {}, function namedFunc() {}, () => {}],
   array: [[], ['1', '2', '3']],
   object: [{}, { key1: 'value1', key2: 'value2' }],
-  bigint: [2n],
+  bigint: [BigInt(9007199254740991)],
   date: [new Date()],
   symbol: [Symbol(), Symbol('symbolname')],
   map: [new Map()],
@@ -38,6 +39,29 @@ describe('validateType(multipleTypes, value)', () => {
       [['array', 'string'], ['array-item-1', 'array-item-2'], undefined],
       [['array', 'string'], 'Some string', undefined],
       [['array', 'string'], undefined, TypeError],
+    ],
+    validateType
+  )
+})
+
+describe('validateType(enum, value)', () => {
+  const expectedType = enumType([
+    'SOME_STRING',
+    10,
+    [1, 2, 3],
+    { key1: 'value1', key2: 'value2' },
+  ])
+
+  testCases(
+    [
+      [expectedType, 'SOME_STRING', undefined],
+      [expectedType, 'ANOTHER_STR', TypeError],
+      [expectedType, 10, undefined],
+      [expectedType, 11, TypeError],
+      [expectedType, [1, 2, 3], undefined],
+      [expectedType, [1, 2, 3, 4], TypeError],
+      [expectedType, { key1: 'value1', key2: 'value2' }, undefined],
+      [expectedType, { key1: 'value1' }, TypeError],
     ],
     validateType
   )
@@ -187,36 +211,16 @@ describe('validateType(objectTypeMap, value)', () => {
   })
 })
 
-describe('validateType(arrayTupleMap, value)', () => {
+describe('validateType(tupleType, value)', () => {
   describe('simple tuple', () => {
-    const arrayTupleMap = {
-      '0': 'string',
-      '1': 'number',
-    }
+    const expectedType = tupleType(['string', 'number'])
 
     testCases(
       [
-        [arrayTupleMap, ['str', 8], undefined],
-        [arrayTupleMap, ['str', 'str'], TypeError],
-        [arrayTupleMap, ['str'], TypeError],
-        [arrayTupleMap, [undefined, 8], TypeError],
-      ],
-      validateType
-    )
-  })
-
-  describe('impossible to satisfy', () => {
-    const arrayTupleMap = {
-      // '0': 'string',
-      '1': 'number',
-    }
-
-    testCases(
-      [
-        [arrayTupleMap, ['str', 8], TypeError],
-        [arrayTupleMap, ['str', 'str'], TypeError],
-        [arrayTupleMap, ['str'], TypeError],
-        [arrayTupleMap, [undefined, 8], TypeError],
+        [expectedType, ['str', 8], undefined],
+        [expectedType, ['str', 'str'], TypeError],
+        [expectedType, ['str'], TypeError],
+        [expectedType, [undefined, 8], TypeError],
       ],
       validateType
     )

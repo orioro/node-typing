@@ -14,10 +14,69 @@ item validation, see either:
 
 # API Docs
 
+- [`anyType`](#anytype)
+- [`singleType(type)`](#singletypetype)
+- [`oneOfTypes(types)`](#oneoftypestypes)
+- [`enumType(values)`](#enumtypevalues)
+- [`indefiniteArrayOfType(itemType)`](#indefinitearrayoftypeitemtype)
+- [`indefiniteObjectOfType(propertyType)`](#indefiniteobjectoftypepropertytype)
+- [`tupleType(items)`](#tupletypeitems)
+- [`objectType(properties)`](#objecttypeproperties)
+- [`castTypeSpec(value)`](#casttypespecvalue)
 - [`typing(types)`](#typingtypes)
 - [`isType(expectedType, value)`](#istypeexpectedtype-value)
 - [`validateType(expectedType, value)`](#validatetypeexpectedtype-value)
 - [`getType(value)`](#gettypevalue)
+
+##### `anyType`
+
+
+
+##### `singleType(type)`
+
+- `type` {String}
+
+##### `oneOfTypes(types)`
+
+- `types` {TypeSpec[]}
+- Returns: {OneOfTypesSpec} 
+
+##### `enumType(values)`
+
+- `values` {*[]}
+- Returns: {EnumTypeSpec} 
+
+##### `indefiniteArrayOfType(itemType)`
+
+- `itemType` {TypeSpec}
+- Returns: {IndefiniteArrayOfTypeSpec} 
+
+##### `indefiniteObjectOfType(propertyType)`
+
+- `propertyType` {TypeSpec}
+- Returns: {IndefiniteObjectOfTypeSpec} 
+
+##### `tupleType(items)`
+
+- `items` {TypeSpec[]}
+- Returns: {TupleTypeSpec} 
+
+##### `objectType(properties)`
+
+- `properties` {Object}
+- Returns: {ObjectTypeSpec} 
+
+##### `castTypeSpec(value)`
+
+Attempts to cast a value into a TypeSpec object:
+- if an `ObjectTypeSpec`, simply return the value itself
+- if a `string`, converts it into a `SingleTypeSpec`
+- if an `array`, converts it into an `OneOfTypesSpec`
+- if a `plain object`, converts it into an `ObjectTypeSpec`
+- otherwise returns `null` upon casting failure
+
+- `value` {*}
+- Returns: {TypeSpec | null} 
 
 ##### `typing(types)`
 
@@ -26,7 +85,7 @@ item validation, see either:
 
 ##### `isType(expectedType, value)`
 
-- `expectedType` {ExpectedType}
+- `expectedType` {TypeSpec}
 - `value` {*}
 - Returns: {boolean} 
 

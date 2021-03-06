@@ -1,29 +1,23 @@
 import { isPlainObject } from 'is-plain-object'
-import { cascadeFind, test, Criteria } from '@orioro/cascade'
+import { cascadeFind, test } from '@orioro/cascade'
+import deepEqual from 'deep-equal'
 
-export type TypeAny = 'any'
+import { castTypeSpec } from './typeSpec'
 
-export type TypeName = string
-
-export type ExpectedType =
-  | TypeAny
-  | TypeName
-  | ExpectedTypeList
-  | ExpectedTypeMap
-
-export type ExpectedTypeList = ExpectedType[]
-
-export type ExpectedTypeMap = {
-  [key: string]: ExpectedType
-}
-
-export type TypeAlternative = [Criteria, TypeName]
-export type TypeAlternatives = TypeAlternative[]
-export type TypeMap = {
-  [type: string]: Criteria
-}
-
-export const TYPE_ANY = 'any'
+import {
+  TypeSpec,
+  ANY_TYPE,
+  SINGLE_TYPE,
+  ONE_OF_TYPES,
+  ENUM_TYPE,
+  INDEFINITE_ARRAY_OF_TYPE,
+  INDEFINITE_OBJECT_OF_TYPE,
+  TUPLE_TYPE,
+  OBJECT_TYPE,
+  TypeAlternative,
+  TypeAlternatives,
+  TypeMap,
+} from './types'
 
 export const CORE_TYPES: TypeMap = {
   string: (value) => typeof value === 'string',
@@ -48,43 +42,82 @@ export const CORE_TYPES: TypeMap = {
 
 const _isType = (
   typeMap: TypeMap,
-  expectedType: ExpectedType,
+  expectedType: TypeSpec,
   value: any
 ): boolean => {
-  if (Array.isArray(expectedType)) {
-    return (expectedType as ExpectedType[]).some((_nestedExpectedType) =>
-      isType(_nestedExpectedType, value)
-    )
-  } else if (isPlainObject(expectedType)) {
-    const expectedKeys = Object.keys(expectedType)
+  const _expectedType = castTypeSpec(expectedType)
 
-    return (
-      (isPlainObject(value) || Array.isArray(value)) &&
-      Object.keys(value).every((valueKey) => expectedKeys.includes(valueKey)) &&
-      expectedKeys.every((expectedKey) =>
-        isType(expectedType[expectedKey], value[expectedKey])
-      )
-    )
-  } else if (typeof expectedType === 'string') {
-    if (expectedType === TYPE_ANY) {
+  if (_expectedType === null) {
+    throw new Error(`Invalid expectedType: ${expectedType}`)
+  }
+
+  switch (_expectedType.specType) {
+    case ANY_TYPE:
       return true
+    case SINGLE_TYPE: {
+      const typeTest = typeMap[_expectedType.type]
+
+      if (typeof typeTest !== 'function') {
+        throw new Error(`Invalid expectedType: ${expectedType}`)
+      }
+
+      return typeTest(value)
     }
+    case ONE_OF_TYPES: {
+      return _expectedType.types.some((_candidateType) =>
+        _isType(typeMap, _candidateType, value)
+      )
+    }
+    case ENUM_TYPE: {
+      return _expectedType.values.some((expectedValue) =>
+        deepEqual(expectedValue, value, { strict: true })
+      )
+    }
+    case INDEFINITE_ARRAY_OF_TYPE: {
+      return (
+        Array.isArray(value) &&
+        value.every((item) => _isType(typeMap, _expectedType.itemType, item))
+      )
+    }
+    case INDEFINITE_OBJECT_OF_TYPE: {
+      return (
+        isPlainObject(value) &&
+        Object.keys(value).every((property) =>
+          _isType(typeMap, _expectedType.propertyType, value[property])
+        )
+      )
+    }
+    case TUPLE_TYPE: {
+      return (
+        Array.isArray(value) &&
+        value.length === _expectedType.items.length &&
+        _expectedType.items.every((itemType, index) =>
+          _isType(typeMap, itemType, value[index])
+        )
+      )
+    }
+    case OBJECT_TYPE: {
+      const expectedProperties = Object.keys(_expectedType.properties)
 
-    const typeTest = typeMap[expectedType as string]
-
-    if (typeof typeTest !== 'function') {
+      return (
+        isPlainObject(value) &&
+        Object.keys(value).every((property) =>
+          expectedProperties.includes(property)
+        ) &&
+        expectedProperties.every((property) =>
+          _isType(typeMap, _expectedType.properties[property], value[property])
+        )
+      )
+    }
+    default: {
       throw new Error(`Invalid expectedType: ${expectedType}`)
     }
-
-    return typeTest(value)
-  } else {
-    throw new Error(`Invalid expectedType: ${expectedType}`)
   }
 }
 
 const _validateType = (
   typeMap: TypeMap,
-  expectedType: ExpectedType,
+  expectedType: TypeSpec,
   value: any
 ): void => {
   if (!_isType(typeMap, expectedType, value)) {
@@ -115,8 +148,8 @@ export const typing = (
   types: TypeAlternatives | TypeMap
 ): {
   getType: (value: any) => string
-  isType: (expectedType: ExpectedType, value: any) => boolean
-  validateType: (expectedType: ExpectedType, value: any) => void
+  isType: (expectedType: TypeSpec, value: any) => boolean
+  validateType: (expectedType: TypeSpec, value: any) => void
 } => {
   if (!Array.isArray(types) && !isPlainObject(types)) {
     throw new TypeError(`Expected types to be array or object, got: ${types}`)
@@ -147,7 +180,7 @@ export const typing = (
 
   /**
    * @function isType
-   * @param {ExpectedType} expectedType Type or array of types that are allowed for the
+   * @param {TypeSpec} expectedType Type or array of types that are allowed for the
    *                                    given value. Use `null` and `undefined` to allow
    *                                    these values
    * @param {*} value The value whose type is being tested
