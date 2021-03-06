@@ -1,23 +1,10 @@
 import { isPlainObject } from 'is-plain-object'
-import { cascadeFind, test } from '@orioro/cascade'
-import deepEqual from 'deep-equal'
 
-import { castTypeSpec } from './typeSpec'
+import { TypeMap, TypeAlternative, TypeAlternatives, TypeSpec } from './types'
 
-import {
-  TypeSpec,
-  ANY_TYPE,
-  SINGLE_TYPE,
-  ONE_OF_TYPES,
-  ENUM_TYPE,
-  INDEFINITE_ARRAY_OF_TYPE,
-  INDEFINITE_OBJECT_OF_TYPE,
-  TUPLE_TYPE,
-  OBJECT_TYPE,
-  TypeAlternative,
-  TypeAlternatives,
-  TypeMap,
-} from './types'
+import { _isType } from './isType'
+import { _validateType } from './validateType'
+import { _getType } from './getType'
 
 export const CORE_TYPES: TypeMap = {
   string: (value) => typeof value === 'string',
@@ -38,105 +25,6 @@ export const CORE_TYPES: TypeMap = {
   weakmap: (value) => value instanceof WeakMap,
   set: (value) => value instanceof Set,
   weakset: (value) => value instanceof WeakSet,
-}
-
-const _isType = (
-  typeMap: TypeMap,
-  expectedType: TypeSpec,
-  value: any
-): boolean => {
-  const _expectedType = castTypeSpec(expectedType)
-
-  if (_expectedType === null) {
-    throw new Error(`Invalid expectedType: ${expectedType}`)
-  }
-
-  switch (_expectedType.specType) {
-    case ANY_TYPE:
-      return true
-    case SINGLE_TYPE: {
-      const typeTest = typeMap[_expectedType.type]
-
-      if (typeof typeTest !== 'function') {
-        throw new Error(`Invalid expectedType: ${expectedType}`)
-      }
-
-      return typeTest(value)
-    }
-    case ONE_OF_TYPES: {
-      return _expectedType.types.some((_candidateType) =>
-        _isType(typeMap, _candidateType, value)
-      )
-    }
-    case ENUM_TYPE: {
-      return _expectedType.values.some((expectedValue) =>
-        deepEqual(expectedValue, value, { strict: true })
-      )
-    }
-    case INDEFINITE_ARRAY_OF_TYPE: {
-      return (
-        Array.isArray(value) &&
-        value.every((item) => _isType(typeMap, _expectedType.itemType, item))
-      )
-    }
-    case INDEFINITE_OBJECT_OF_TYPE: {
-      return (
-        isPlainObject(value) &&
-        Object.keys(value).every((property) =>
-          _isType(typeMap, _expectedType.propertyType, value[property])
-        )
-      )
-    }
-    case TUPLE_TYPE: {
-      return (
-        Array.isArray(value) &&
-        value.length === _expectedType.items.length &&
-        _expectedType.items.every((itemType, index) =>
-          _isType(typeMap, itemType, value[index])
-        )
-      )
-    }
-    case OBJECT_TYPE: {
-      const expectedProperties = Object.keys(_expectedType.properties)
-
-      return (
-        isPlainObject(value) &&
-        Object.keys(value).every((property) =>
-          expectedProperties.includes(property)
-        ) &&
-        expectedProperties.every((property) =>
-          _isType(typeMap, _expectedType.properties[property], value[property])
-        )
-      )
-    }
-    default: {
-      throw new Error(`Invalid expectedType: ${expectedType}`)
-    }
-  }
-}
-
-const _validateType = (
-  typeMap: TypeMap,
-  expectedType: TypeSpec,
-  value: any
-): void => {
-  if (!_isType(typeMap, expectedType, value)) {
-    throw new TypeError(
-      `Expected \`${
-        Array.isArray(expectedType) ? expectedType.join(' | ') : expectedType
-      }\` but got \`${getType(value)}\`: ${JSON.stringify(value)}`
-    )
-  }
-}
-
-const _getType = (typeAlternatives: TypeAlternatives, value: any): string => {
-  const type = cascadeFind(test, typeAlternatives, value)
-
-  if (type === undefined) {
-    throw new Error(`Could not identify value type: ${value}`)
-  }
-
-  return type
 }
 
 /**
@@ -200,7 +88,7 @@ export const typing = (
    * @returns {undefined}
    * @throws {TypeError}
    */
-  const validateType = _validateType.bind(null, _typeMap)
+  const validateType = _validateType.bind(null, _typeMap, _typeAlternatives)
 
   /**
    * @function getType

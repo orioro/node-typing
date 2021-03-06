@@ -64,6 +64,7 @@ export const enumType = (values: any[]): EnumTypeSpec => ({
 })
 
 /**
+ * @todo typeSpec Achieve 100% test coverage
  * @function indefiniteArrayOfType
  * @param {TypeSpec} itemType
  * @returns {IndefiniteArrayOfTypeSpec}
