@@ -3,7 +3,6 @@ import { _isType } from './isType'
 import { _getType } from './getType'
 
 /**
- * @todo typing Move _validateType function into isolate file
  * @function _validateType
  * @private
  */

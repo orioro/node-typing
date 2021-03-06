@@ -2,7 +2,6 @@ import { cascadeFind, test } from '@orioro/cascade'
 import { TypeAlternatives } from './types'
 
 /**
- * @todo typing Move _getType function into isolate file
  * @function _getType
  * @private
  */

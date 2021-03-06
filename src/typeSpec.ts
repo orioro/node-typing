@@ -24,6 +24,10 @@ import {
 } from './types'
 
 /**
+ * Constant to be used to express that any type is allowed:
+ * - `isType` always returns true
+ * - `validateType` never throws
+ *
  * @const {AnyTypeSpec} anyType
  * @type {AnyTypeSpec}
  */
@@ -34,7 +38,7 @@ export const anyType: AnyTypeSpec = {
 /**
  * @function singleType
  * @param {String} type
- * @return {SingleTypeSpec}
+ * @returns {SingleTypeSpec}
  */
 export const singleType = (type: SingleTypeSpecShorthand): SingleTypeSpec => ({
   specType: SINGLE_TYPE,
@@ -64,7 +68,6 @@ export const enumType = (values: any[]): EnumTypeSpec => ({
 })
 
 /**
- * @todo typeSpec Achieve 100% test coverage
  * @function indefiniteArrayOfType
  * @param {TypeSpec} itemType
  * @returns {IndefiniteArrayOfTypeSpec}

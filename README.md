@@ -14,6 +14,8 @@ item validation, see either:
 
 # API Docs
 
+- [`_getType()`](#_gettype)
+- [`_isType()`](#_istype)
 - [`anyType`](#anytype)
 - [`singleType(type)`](#singletypetype)
 - [`oneOfTypes(types)`](#oneoftypestypes)
@@ -27,14 +29,20 @@ item validation, see either:
 - [`isType(expectedType, value)`](#istypeexpectedtype-value)
 - [`validateType(expectedType, value)`](#validatetypeexpectedtype-value)
 - [`getType(value)`](#gettypevalue)
+- [`_validateType()`](#_validatetype)
 
 ##### `anyType`
+
+Constant to be used to express that any type is allowed:
+- `isType` always returns true
+- `validateType` never throws
 
 
 
 ##### `singleType(type)`
 
 - `type` {String}
+- Returns: {SingleTypeSpec} 
 
 ##### `oneOfTypes(types)`
 
@@ -119,3 +127,17 @@ Returns nothing (undefined) otherwise.
   - set
   - weakmap
   - weakset
+
+
+
+## Private methods
+
+##### `_getType()`
+
+
+
+##### `_isType()`
+
+
+
+##### `_validateType()`

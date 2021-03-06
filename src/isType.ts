@@ -16,7 +16,6 @@ import {
 } from './types'
 
 /**
- * @todo typing Move _isType function into isolate file
  * @function _isType
  * @private
  */
