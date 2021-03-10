@@ -1,5 +1,6 @@
 import { isPlainObject } from 'is-plain-object'
 import {
+  PlainObject,
   ANY_TYPE,
   AnyTypeSpec,
   SINGLE_TYPE,
@@ -23,24 +24,31 @@ import {
   NonShorthandTypeSpec,
 } from './types'
 
+const _ANY_TYPE: AnyTypeSpec = { specType: ANY_TYPE }
+
 /**
  * Constant to be used to express that any type is allowed:
  * - `isType` always returns true
  * - `validateType` never throws
  *
- * @const {AnyTypeSpec} anyType
+ * @function anyType
+ * @param {Object} [metadata]
  * @type {AnyTypeSpec}
  */
-export const anyType: AnyTypeSpec = {
-  specType: ANY_TYPE,
-}
+export const anyType = (metadata?: PlainObject): AnyTypeSpec =>
+  metadata ? { ...metadata, specType: ANY_TYPE } : _ANY_TYPE
 
 /**
  * @function singleType
  * @param {String} type
+ * @param {Object} [metadata]
  * @returns {SingleTypeSpec}
  */
-export const singleType = (type: SingleTypeSpecShorthand): SingleTypeSpec => ({
+export const singleType = (
+  type: SingleTypeSpecShorthand,
+  metadata: PlainObject = {}
+): SingleTypeSpec => ({
+  ...metadata,
   specType: SINGLE_TYPE,
   type,
 })
@@ -48,11 +56,14 @@ export const singleType = (type: SingleTypeSpecShorthand): SingleTypeSpec => ({
 /**
  * @function oneOfTypes
  * @param {TypeSpec[]} types
+ * @param {Object} [metadata]
  * @returns {OneOfTypesSpec}
  */
 export const oneOfTypes = (
-  types: OneOfTypesSpecShorthand[]
+  types: OneOfTypesSpecShorthand[],
+  metadata: PlainObject = {}
 ): OneOfTypesSpec => ({
+  ...metadata,
   specType: ONE_OF_TYPES,
   types,
 })
@@ -60,9 +71,14 @@ export const oneOfTypes = (
 /**
  * @function enumType
  * @param {*[]} values
+ * @param {Object} [metadata]
  * @returns {EnumTypeSpec}
  */
-export const enumType = (values: any[]): EnumTypeSpec => ({
+export const enumType = (
+  values: any[],
+  metadata: PlainObject = {}
+): EnumTypeSpec => ({
+  ...metadata,
   specType: ENUM_TYPE,
   values,
 })
@@ -70,11 +86,14 @@ export const enumType = (values: any[]): EnumTypeSpec => ({
 /**
  * @function indefiniteArrayOfType
  * @param {TypeSpec} itemType
+ * @param {Object} [metadata]
  * @returns {IndefiniteArrayOfTypeSpec}
  */
 export const indefiniteArrayOfType = (
-  itemType: TypeSpec
+  itemType: TypeSpec,
+  metadata: PlainObject = {}
 ): IndefiniteArrayOfTypeSpec => ({
+  ...metadata,
   specType: INDEFINITE_ARRAY_OF_TYPE,
   itemType,
 })
@@ -82,11 +101,14 @@ export const indefiniteArrayOfType = (
 /**
  * @function indefiniteObjectOfType
  * @param {TypeSpec} propertyType
+ * @param {Object} [metadata]
  * @returns {IndefiniteObjectOfTypeSpec}
  */
 export const indefiniteObjectOfType = (
-  propertyType: TypeSpec
+  propertyType: TypeSpec,
+  metadata: PlainObject = {}
 ): IndefiniteObjectOfTypeSpec => ({
+  ...metadata,
   specType: INDEFINITE_OBJECT_OF_TYPE,
   propertyType,
 })
@@ -94,9 +116,14 @@ export const indefiniteObjectOfType = (
 /**
  * @function tupleType
  * @param {TypeSpec[]} items
+ * @param {Object} [metadata]
  * @returns {TupleTypeSpec}
  */
-export const tupleType = (items: TypeSpec[]): TupleTypeSpec => ({
+export const tupleType = (
+  items: TypeSpec[],
+  metadata: PlainObject = {}
+): TupleTypeSpec => ({
+  ...metadata,
   specType: TUPLE_TYPE,
   items,
 })
@@ -104,11 +131,14 @@ export const tupleType = (items: TypeSpec[]): TupleTypeSpec => ({
 /**
  * @function objectType
  * @param {Object} properties Types of each of the properties
+ * @param {Object} [metadata]
  * @returns {ObjectTypeSpec}
  */
 export const objectType = (
-  properties: ObjectTypeSpecShorthand
+  properties: ObjectTypeSpecShorthand,
+  metadata: PlainObject = {}
 ): ObjectTypeSpec => ({
+  ...metadata,
   specType: OBJECT_TYPE,
   properties,
 })
@@ -123,6 +153,7 @@ export const objectType = (
  *
  * @function castTypeSpec
  * @param {*} value
+ * @param {Object} [metadata]
  * @returns {TypeSpec | null}
  */
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -136,7 +167,7 @@ export const castTypeSpec = (value: any): NonShorthandTypeSpec | null => {
   } else if (Array.isArray(value)) {
     return oneOfTypes(value)
   } else if (typeof value === 'string') {
-    return value === ANY_TYPE ? anyType : singleType(value)
+    return value === ANY_TYPE ? anyType() : singleType(value)
   } else {
     return null
   }

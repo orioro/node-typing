@@ -16,65 +16,72 @@ item validation, see either:
 
 - [`_getType()`](#_gettype)
 - [`_isType()`](#_istype)
-- [`anyType`](#anytype)
-- [`singleType(type)`](#singletypetype)
-- [`oneOfTypes(types)`](#oneoftypestypes)
-- [`enumType(values)`](#enumtypevalues)
-- [`indefiniteArrayOfType(itemType)`](#indefinitearrayoftypeitemtype)
-- [`indefiniteObjectOfType(propertyType)`](#indefiniteobjectoftypepropertytype)
-- [`tupleType(items)`](#tupletypeitems)
-- [`objectType(properties)`](#objecttypeproperties)
-- [`castTypeSpec(value)`](#casttypespecvalue)
+- [`anyType(metadata)`](#anytypemetadata)
+- [`singleType(type, metadata)`](#singletypetype-metadata)
+- [`oneOfTypes(types, metadata)`](#oneoftypestypes-metadata)
+- [`enumType(values, metadata)`](#enumtypevalues-metadata)
+- [`indefiniteArrayOfType(itemType, metadata)`](#indefinitearrayoftypeitemtype-metadata)
+- [`indefiniteObjectOfType(propertyType, metadata)`](#indefiniteobjectoftypepropertytype-metadata)
+- [`tupleType(items, metadata)`](#tupletypeitems-metadata)
+- [`objectType(properties, metadata)`](#objecttypeproperties-metadata)
+- [`castTypeSpec(value, metadata)`](#casttypespecvalue-metadata)
 - [`typing(types)`](#typingtypes)
 - [`isType(expectedType, value)`](#istypeexpectedtype-value)
 - [`validateType(expectedType, value)`](#validatetypeexpectedtype-value)
 - [`getType(value)`](#gettypevalue)
 - [`_validateType()`](#_validatetype)
 
-##### `anyType`
+##### `anyType(metadata)`
 
 Constant to be used to express that any type is allowed:
 - `isType` always returns true
 - `validateType` never throws
 
+- `metadata` {Object}
 
-
-##### `singleType(type)`
+##### `singleType(type, metadata)`
 
 - `type` {String}
+- `metadata` {Object}
 - Returns: {SingleTypeSpec} 
 
-##### `oneOfTypes(types)`
+##### `oneOfTypes(types, metadata)`
 
 - `types` {TypeSpec[]}
+- `metadata` {Object}
 - Returns: {OneOfTypesSpec} 
 
-##### `enumType(values)`
+##### `enumType(values, metadata)`
 
 - `values` {*[]}
+- `metadata` {Object}
 - Returns: {EnumTypeSpec} 
 
-##### `indefiniteArrayOfType(itemType)`
+##### `indefiniteArrayOfType(itemType, metadata)`
 
 - `itemType` {TypeSpec}
+- `metadata` {Object}
 - Returns: {IndefiniteArrayOfTypeSpec} 
 
-##### `indefiniteObjectOfType(propertyType)`
+##### `indefiniteObjectOfType(propertyType, metadata)`
 
 - `propertyType` {TypeSpec}
+- `metadata` {Object}
 - Returns: {IndefiniteObjectOfTypeSpec} 
 
-##### `tupleType(items)`
+##### `tupleType(items, metadata)`
 
 - `items` {TypeSpec[]}
+- `metadata` {Object}
 - Returns: {TupleTypeSpec} 
 
-##### `objectType(properties)`
+##### `objectType(properties, metadata)`
 
 - `properties` {Object}
+- `metadata` {Object}
 - Returns: {ObjectTypeSpec} 
 
-##### `castTypeSpec(value)`
+##### `castTypeSpec(value, metadata)`
 
 Attempts to cast a value into a TypeSpec object:
 - if an `ObjectTypeSpec`, simply return the value itself
@@ -84,6 +91,7 @@ Attempts to cast a value into a TypeSpec object:
 - otherwise returns `null` upon casting failure
 
 - `value` {*}
+- `metadata` {Object}
 - Returns: {TypeSpec | null} 
 
 ##### `typing(types)`
