@@ -25,6 +25,7 @@ export const CORE_TYPES: TypeMap = {
   weakmap: (value) => value instanceof WeakMap,
   set: (value) => value instanceof Set,
   weakset: (value) => value instanceof WeakSet,
+  promise: (value) => value instanceof Promise,
 }
 
 /**

@@ -28,6 +28,8 @@ const TYPE_SAMPLES = {
   weakmap: [new WeakMap()],
   set: [new Set()],
   weakset: [new WeakSet()],
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  promise: [new Promise(() => {})],
 }
 
 describe('validateType(multipleTypes, value)', () => {
