@@ -60,7 +60,7 @@ export const singleType = (
  * @returns {OneOfTypesSpec}
  */
 export const oneOfTypes = (
-  types: OneOfTypesSpecShorthand[],
+  types: OneOfTypesSpecShorthand,
   metadata: PlainObject = {}
 ): OneOfTypesSpec => ({
   ...metadata,
@@ -170,5 +170,33 @@ export const castTypeSpec = (value: any): NonShorthandTypeSpec | null => {
     return value === ANY_TYPE ? anyType() : singleType(value)
   } else {
     return null
+  }
+}
+
+export const stringifyTypeSpec = (typeSpec: TypeSpec): string => {
+  const _typeSpec = castTypeSpec(typeSpec)
+
+  if (_typeSpec === null) {
+    return 'INVALID_TYPE_SPEC'
+  } else {
+    switch (_typeSpec.specType) {
+      case ANY_TYPE:
+        return 'any'
+      case SINGLE_TYPE:
+        return _typeSpec.type
+      case ONE_OF_TYPES:
+        return _typeSpec.types.map(stringifyTypeSpec).join(' | ')
+      case ENUM_TYPE:
+        return `${_typeSpec.values.join(', ')}`
+      case INDEFINITE_ARRAY_OF_TYPE:
+        return `${stringifyTypeSpec(_typeSpec.itemType)}[]`
+      case INDEFINITE_OBJECT_OF_TYPE:
+        return `${stringifyTypeSpec(_typeSpec.propertyType)}{}`
+      case TUPLE_TYPE:
+        return `[${_typeSpec.items.map(stringifyTypeSpec).join(', ')}]`
+      case OBJECT_TYPE: {
+        return `{ ${Object.keys(_typeSpec.properties).join(', ')} }`
+      }
+    }
   }
 }

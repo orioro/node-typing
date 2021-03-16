@@ -2,6 +2,8 @@ import { TypeMap, TypeSpec, TypeAlternatives } from './types'
 import { _isType } from './isType'
 import { _getType } from './getType'
 
+import { stringifyTypeSpec } from './typeSpec'
+
 /**
  * @function _validateType
  * @private
@@ -14,11 +16,10 @@ export const _validateType = (
 ): void => {
   if (!_isType(typeMap, expectedType, value)) {
     throw new TypeError(
-      `Expected \`${
-        Array.isArray(expectedType) ? expectedType.join(' | ') : expectedType
-      }\` but got \`${_getType(typeAlternatives, value)}\`: ${JSON.stringify(
+      `Expected \`${stringifyTypeSpec(expectedType)}\` but got \`${_getType(
+        typeAlternatives,
         value
-      )}`
+      )}\`: ${JSON.stringify(value)}`
     )
   }
 }

@@ -21,6 +21,7 @@ Array [
   "objectType",
   "oneOfTypes",
   "singleType",
+  "stringifyTypeSpec",
   "tupleType",
   "typing",
   "validateType",
