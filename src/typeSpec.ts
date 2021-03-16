@@ -35,8 +35,10 @@ const _ANY_TYPE: AnyTypeSpec = { specType: ANY_TYPE }
  * @param {Object} [metadata]
  * @type {AnyTypeSpec}
  */
-export const anyType = (metadata?: PlainObject): AnyTypeSpec =>
-  metadata ? { ...metadata, specType: ANY_TYPE } : _ANY_TYPE
+export const anyType = (metadata?: {
+  not?: TypeSpec
+  [key: string]: any
+}): AnyTypeSpec => (metadata ? { ...metadata, specType: ANY_TYPE } : _ANY_TYPE)
 
 /**
  * @function singleType
@@ -181,7 +183,9 @@ export const stringifyTypeSpec = (typeSpec: TypeSpec): string => {
   } else {
     switch (_typeSpec.specType) {
       case ANY_TYPE:
-        return 'any'
+        return _typeSpec.not === undefined
+          ? 'any'
+          : `any!${stringifyTypeSpec(_typeSpec.not)}`
       case SINGLE_TYPE:
         return _typeSpec.type
       case ONE_OF_TYPES:

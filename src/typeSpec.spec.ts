@@ -18,6 +18,7 @@ describe('stringifyTypeSpec', () => {
       ['string', 'string'],
       [['string', 'number'], 'string | number'],
       [anyType(), 'any'],
+      [anyType({ not: 'string' }), 'any!string'],
       [singleType('string'), 'string'],
       [oneOfTypes(['string', 'number']), 'string | number'],
       [enumType(['STR_A', 9, false]), 'STR_A, 9, false'],

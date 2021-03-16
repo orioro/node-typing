@@ -1,6 +1,7 @@
 import { testCases, fnCallLabel, variableName } from '@orioro/jest-util'
 import { getType, validateType, CORE_TYPES, typing } from './typing'
 import {
+  anyType,
   tupleType,
   enumType,
   indefiniteArrayOfType,
@@ -333,6 +334,26 @@ describe('type: any', () => {
   )
 
   testCases(cases, validateType)
+
+  describe('anyType({ not: TypeSpec })', () => {
+    testCases(
+      [
+        [anyType({ not: 'string' }), 1, undefined],
+        [anyType({ not: 'string' }), 'str', TypeError],
+        [
+          anyType({ not: tupleType(['string', 'number']) }),
+          ['str', true],
+          undefined,
+        ],
+        [
+          anyType({ not: tupleType(['string', 'number']) }),
+          ['str', 19],
+          TypeError,
+        ],
+      ],
+      validateType
+    )
+  })
 })
 
 describe('getType(value)', () => {

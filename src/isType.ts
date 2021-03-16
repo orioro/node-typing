@@ -32,7 +32,9 @@ export const _isType = (
 
   switch (_expectedType.specType) {
     case ANY_TYPE:
-      return true
+      return _expectedType.not === undefined
+        ? true
+        : !_isType(typeMap, _expectedType.not, value)
     case SINGLE_TYPE: {
       const typeTest = typeMap[_expectedType.type]
 

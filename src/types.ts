@@ -18,6 +18,7 @@ export type TypeName = string
 export const ANY_TYPE = 'any'
 export type AnyTypeSpec = PlainObject & {
   specType: 'any'
+  not?: TypeSpec
 }
 export type AnyTypeShorthandSpec = 'any'
 
