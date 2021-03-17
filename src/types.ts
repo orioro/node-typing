@@ -18,7 +18,7 @@ export type TypeName = string
 export const ANY_TYPE = 'any'
 export type AnyTypeSpec = PlainObject & {
   specType: 'any'
-  not?: TypeSpec
+  not?: NonShorthandTypeSpec
 }
 export type AnyTypeShorthandSpec = 'any'
 
@@ -32,7 +32,7 @@ export type SingleTypeSpecShorthand = TypeName
 export const ONE_OF_TYPES = 'one-of'
 export type OneOfTypesSpec = PlainObject & {
   specType: 'one-of'
-  types: TypeSpec[]
+  types: NonShorthandTypeSpec[]
 }
 export type OneOfTypesSpecShorthand = TypeSpec[]
 
@@ -45,26 +45,26 @@ export type EnumTypeSpec = PlainObject & {
 export const INDEFINITE_ARRAY_OF_TYPE = 'indefinite-array-of'
 export type IndefiniteArrayOfTypeSpec = PlainObject & {
   specType: 'indefinite-array-of'
-  itemType: TypeSpec
+  itemType: NonShorthandTypeSpec
 }
 
 export const INDEFINITE_OBJECT_OF_TYPE = 'indefinite-object-of'
 export type IndefiniteObjectOfTypeSpec = PlainObject & {
   specType: 'indefinite-object-of'
-  propertyType: TypeSpec
+  propertyType: NonShorthandTypeSpec
 }
 
 export const TUPLE_TYPE = 'tuple'
 export type TupleTypeSpec = PlainObject & {
   specType: 'tuple'
-  items: TypeSpec[]
+  items: NonShorthandTypeSpec[]
 }
 
 export const OBJECT_TYPE = 'object'
 export type ObjectTypeSpec = PlainObject & {
   specType: 'object'
   properties: {
-    [key: string]: TypeSpec
+    [key: string]: NonShorthandTypeSpec
   }
 }
 export type ObjectTypeSpecShorthand = {

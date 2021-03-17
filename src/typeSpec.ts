@@ -24,8 +24,6 @@ import {
   NonShorthandTypeSpec,
 } from './types'
 
-const _ANY_TYPE: AnyTypeSpec = { specType: ANY_TYPE }
-
 /**
  * Constant to be used to express that any type is allowed:
  * - `isType` always returns true
@@ -35,10 +33,23 @@ const _ANY_TYPE: AnyTypeSpec = { specType: ANY_TYPE }
  * @param {Object} [metadata]
  * @type {AnyTypeSpec}
  */
-export const anyType = (metadata?: {
+export const anyType = ({
+  not,
+  ...metadata
+}: {
   not?: TypeSpec
   [key: string]: any
-}): AnyTypeSpec => (metadata ? { ...metadata, specType: ANY_TYPE } : _ANY_TYPE)
+} = {}): AnyTypeSpec =>
+  not
+    ? {
+        ...metadata,
+        not: castTypeSpec(not),
+        specType: ANY_TYPE,
+      }
+    : {
+        ...metadata,
+        specType: ANY_TYPE,
+      }
 
 /**
  * @function singleType
@@ -67,7 +78,7 @@ export const oneOfTypes = (
 ): OneOfTypesSpec => ({
   ...metadata,
   specType: ONE_OF_TYPES,
-  types,
+  types: types.map(castTypeSpec),
 })
 
 /**
@@ -97,7 +108,7 @@ export const indefiniteArrayOfType = (
 ): IndefiniteArrayOfTypeSpec => ({
   ...metadata,
   specType: INDEFINITE_ARRAY_OF_TYPE,
-  itemType,
+  itemType: castTypeSpec(itemType),
 })
 
 /**
@@ -112,7 +123,7 @@ export const indefiniteObjectOfType = (
 ): IndefiniteObjectOfTypeSpec => ({
   ...metadata,
   specType: INDEFINITE_OBJECT_OF_TYPE,
-  propertyType,
+  propertyType: castTypeSpec(propertyType),
 })
 
 /**
@@ -127,7 +138,7 @@ export const tupleType = (
 ): TupleTypeSpec => ({
   ...metadata,
   specType: TUPLE_TYPE,
-  items,
+  items: items.map(castTypeSpec),
 })
 
 /**
@@ -142,7 +153,13 @@ export const objectType = (
 ): ObjectTypeSpec => ({
   ...metadata,
   specType: OBJECT_TYPE,
-  properties,
+  properties: Object.keys(properties).reduce(
+    (acc, property) => ({
+      ...acc,
+      [property]: castTypeSpec(properties[property]),
+    }),
+    {}
+  ),
 })
 
 /**
@@ -159,7 +176,7 @@ export const objectType = (
  * @returns {TypeSpec | null}
  */
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export const castTypeSpec = (value: any): NonShorthandTypeSpec | null => {
+export const castTypeSpec = (value: any): NonShorthandTypeSpec => {
   if (isPlainObject(value)) {
     if (typeof value.specType === 'string') {
       return value
@@ -171,7 +188,7 @@ export const castTypeSpec = (value: any): NonShorthandTypeSpec | null => {
   } else if (typeof value === 'string') {
     return value === ANY_TYPE ? anyType() : singleType(value)
   } else {
-    return null
+    throw new Error(`Invalid type: ${JSON.stringify(value)}`)
   }
 }
 
@@ -201,6 +218,8 @@ export const stringifyTypeSpec = (typeSpec: TypeSpec): string => {
       case OBJECT_TYPE: {
         return `{ ${Object.keys(_typeSpec.properties).join(', ')} }`
       }
+      default:
+        return Object.prototype.toString.call(typeSpec)
     }
   }
 }

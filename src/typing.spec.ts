@@ -416,12 +416,8 @@ describe('typing(types)', () => {
           ['string', 'abc123-', true],
           ['string', 123, false],
           ['number', 123, true],
-          [
-            'unknown_type',
-            123,
-            new Error('Invalid expectedType: unknown_type'),
-          ],
-          [true, 123, new Error('Invalid expectedType: true')],
+          ['unknown_type', 123, new Error('Invalid type: unknown_type')],
+          [true, 123, new Error('Invalid type: true')],
         ],
         isType
       )
@@ -454,11 +450,7 @@ describe('typing(types)', () => {
           ['string', 'abc123-', undefined],
           ['string', 123, TypeError],
           ['number', 123, undefined],
-          [
-            'unknown_type',
-            123,
-            new Error('Invalid expectedType: unknown_type'),
-          ],
+          ['unknown_type', 123, new Error('Invalid type: unknown_type')],
         ],
         validateType
       )
@@ -502,13 +494,7 @@ describe('error cases', () => {
   const expectedType = { specType: 'unknown_spec_type' }
 
   testCases(
-    [
-      [
-        expectedType,
-        'some-value',
-        new Error(`Invalid expectedType: ${expectedType}`),
-      ],
-    ],
+    [[expectedType, 'some-value', new Error(`Invalid type: ${expectedType}`)]],
     validateType
   )
 })

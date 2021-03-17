@@ -2,6 +2,7 @@ import { isPlainObject } from 'is-plain-object'
 import deepEqual from 'deep-equal'
 import { castTypeSpec } from './typeSpec'
 
+import { stringifyTypeSpec } from './typeSpec'
 import {
   TypeSpec,
   ANY_TYPE,
@@ -26,10 +27,6 @@ export const _isType = (
 ): boolean => {
   const _expectedType = castTypeSpec(expectedType)
 
-  if (_expectedType === null) {
-    throw new Error(`Invalid expectedType: ${expectedType}`)
-  }
-
   switch (_expectedType.specType) {
     case ANY_TYPE:
       return _expectedType.not === undefined
@@ -39,7 +36,7 @@ export const _isType = (
       const typeTest = typeMap[_expectedType.type]
 
       if (typeof typeTest !== 'function') {
-        throw new Error(`Invalid expectedType: ${expectedType}`)
+        throw new Error(`Invalid type: ${stringifyTypeSpec(_expectedType)}`)
       }
 
       return typeTest(value)
@@ -91,7 +88,7 @@ export const _isType = (
       )
     }
     default: {
-      throw new Error(`Invalid expectedType: ${expectedType}`)
+      throw new Error(`Invalid type: ${stringifyTypeSpec(_expectedType)}`)
     }
   }
 }
