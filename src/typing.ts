@@ -6,6 +6,10 @@ import { _isType } from './isType'
 import { _validateType } from './validateType'
 import { _getType } from './getType'
 
+/**
+ * @todo typing Study Blob, File, DOMElement, etc support.
+ * @constant {TypeMap} CORE_TYPES
+ */
 export const CORE_TYPES: TypeMap = {
   string: (value) => typeof value === 'string',
   regexp: (value) => value instanceof RegExp,

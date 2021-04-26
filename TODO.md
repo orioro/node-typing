@@ -1,1 +1,1 @@
-
+- typing | Study Blob, File, DOMElement, etc support. (src/typing.ts)

@@ -25,6 +25,7 @@ item validation, see either:
 - [`tupleType(items, metadata)`](#tupletypeitems-metadata)
 - [`objectType(properties, metadata)`](#objecttypeproperties-metadata)
 - [`castTypeSpec(value, metadata)`](#casttypespecvalue-metadata)
+- [`CORE_TYPES`](#core_types)
 - [`typing(types)`](#typingtypes)
 - [`isType(expectedType, value)`](#istypeexpectedtype-value)
 - [`validateType(expectedType, value)`](#validatetypeexpectedtype-value)
@@ -93,6 +94,10 @@ Attempts to cast a value into a TypeSpec object:
 - `value` {*}
 - `metadata` {Object}
 - Returns: {TypeSpec | null} 
+
+##### `CORE_TYPES`
+
+
 
 ##### `typing(types)`
 
