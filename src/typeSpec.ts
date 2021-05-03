@@ -149,7 +149,7 @@ export const tupleType = (
  */
 export const objectType = (
   properties: ObjectTypeSpecShorthand,
-  metadata: PlainObject = {}
+  { unknownProperties, ...metadata }: PlainObject = {}
 ): ObjectTypeSpec => ({
   ...metadata,
   specType: OBJECT_TYPE,
@@ -160,6 +160,11 @@ export const objectType = (
     }),
     {}
   ),
+  unknownProperties: unknownProperties
+    ? unknownProperties === true
+      ? true
+      : castTypeSpec(unknownProperties)
+    : false,
 })
 
 /**
@@ -195,31 +200,27 @@ export const castTypeSpec = (value: any): NonShorthandTypeSpec => {
 export const stringifyTypeSpec = (typeSpec: TypeSpec): string => {
   const _typeSpec = castTypeSpec(typeSpec)
 
-  if (_typeSpec === null) {
-    return 'INVALID_TYPE_SPEC'
-  } else {
-    switch (_typeSpec.specType) {
-      case ANY_TYPE:
-        return _typeSpec.not === undefined
-          ? 'any'
-          : `any!${stringifyTypeSpec(_typeSpec.not)}`
-      case SINGLE_TYPE:
-        return _typeSpec.type
-      case ONE_OF_TYPES:
-        return _typeSpec.types.map(stringifyTypeSpec).join(' | ')
-      case ENUM_TYPE:
-        return `${_typeSpec.values.join(', ')}`
-      case INDEFINITE_ARRAY_OF_TYPE:
-        return `${stringifyTypeSpec(_typeSpec.itemType)}[]`
-      case INDEFINITE_OBJECT_OF_TYPE:
-        return `${stringifyTypeSpec(_typeSpec.propertyType)}{}`
-      case TUPLE_TYPE:
-        return `[${_typeSpec.items.map(stringifyTypeSpec).join(', ')}]`
-      case OBJECT_TYPE: {
-        return `{ ${Object.keys(_typeSpec.properties).join(', ')} }`
-      }
-      default:
-        return Object.prototype.toString.call(typeSpec)
+  switch (_typeSpec.specType) {
+    case ANY_TYPE:
+      return _typeSpec.not === undefined
+        ? 'any'
+        : `any!${stringifyTypeSpec(_typeSpec.not)}`
+    case SINGLE_TYPE:
+      return _typeSpec.type
+    case ONE_OF_TYPES:
+      return _typeSpec.types.map(stringifyTypeSpec).join(' | ')
+    case ENUM_TYPE:
+      return `${_typeSpec.values.join(', ')}`
+    case INDEFINITE_ARRAY_OF_TYPE:
+      return `${stringifyTypeSpec(_typeSpec.itemType)}[]`
+    case INDEFINITE_OBJECT_OF_TYPE:
+      return `${stringifyTypeSpec(_typeSpec.propertyType)}{}`
+    case TUPLE_TYPE:
+      return `[${_typeSpec.items.map(stringifyTypeSpec).join(', ')}]`
+    case OBJECT_TYPE: {
+      return `{ ${Object.keys(_typeSpec.properties).join(', ')} }`
     }
+    default:
+      return Object.prototype.toString.call(typeSpec)
   }
 }

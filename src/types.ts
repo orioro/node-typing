@@ -66,6 +66,7 @@ export type ObjectTypeSpec = PlainObject & {
   properties: {
     [key: string]: NonShorthandTypeSpec
   }
+  unknownProperties?: boolean | NonShorthandTypeSpec
 }
 export type ObjectTypeSpecShorthand = {
   [key: string]: TypeSpec

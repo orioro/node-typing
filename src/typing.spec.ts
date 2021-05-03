@@ -6,7 +6,9 @@ import {
   enumType,
   indefiniteArrayOfType,
   indefiniteObjectOfType,
+  objectType,
 } from './typeSpec'
+import { TypeAlternatives } from './types'
 
 const CORE_TYPE_NAMES = Object.keys(CORE_TYPES)
 
@@ -131,15 +133,77 @@ describe('validateType(objectTypeSpec, value)', () => {
         // Missing key1 and key2
         [{}, TypeError],
 
-        // Missing key1 and key2 (arrays are allowed in objectTypeSpec)
-        [[], TypeError],
-
         // Unknown key3
         [{ key1: 'str1', key2: 'str2', key3: 'str3' }, TypeError],
       ],
       validateType.bind(null, objectTypeSpec),
       _renderLabel
     )
+  })
+
+  describe('allow unknown properties', () => {
+    describe('unknownProperties: true', () => {
+      const objectTypeSpec = objectType(
+        {
+          key1: 'string',
+          key2: ['number', 'string'],
+        },
+        {
+          unknownProperties: true,
+        }
+      )
+
+      testCases(
+        [
+          // Control
+          [{ key1: 'str1', key2: 123 }, undefined],
+
+          // Missing key2
+          [{ key1: 'str1' }, TypeError],
+
+          // Missing key1 and key2
+          [{}, TypeError],
+
+          // Unknown key3
+          [{ key1: 'str1', key2: 'str2', key3: 'str3' }, undefined],
+        ],
+        validateType.bind(null, objectTypeSpec),
+        _renderLabel
+      )
+    })
+
+    describe('unknownProperties: TypeSpec', () => {
+      const objectTypeSpec = objectType(
+        {
+          key1: 'string',
+          key2: ['number', 'string'],
+        },
+        {
+          unknownProperties: 'string',
+        }
+      )
+
+      testCases(
+        [
+          // Control
+          [{ key1: 'str1', key2: 123 }, undefined],
+
+          // Missing key2
+          [{ key1: 'str1' }, TypeError],
+
+          // Missing key1 and key2
+          [{}, TypeError],
+
+          // Unknown key3 - matches unknownProperties type
+          [{ key1: 'str1', key2: 'str2', key3: 'str3' }, undefined],
+
+          // Unknown key3 - does not match unknownProperties type
+          [{ key1: 'str1', key2: 'str2', key3: 8 }, TypeError],
+        ],
+        validateType.bind(null, objectTypeSpec),
+        _renderLabel
+      )
+    })
   })
 
   describe('allow undefined', () => {
@@ -402,6 +466,8 @@ describe('validateType(typeName, value)', () => {
 
 describe('typing(types)', () => {
   test('types is required', () => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore: Argument of type 'undefined' is not assignable to parameter of type 'TypeMap | TypeAlternatives'.
     expect(() => typing(undefined)).toThrow(TypeError)
   })
 
@@ -473,7 +539,7 @@ describe('typing(types)', () => {
   })
 
   describe('typing(types: TypeAlternatives)', () => {
-    const types = [
+    const types: TypeAlternatives = [
       [
         (value) => typeof value === 'string' && /^[a-zA-Z0-9]+$/.test(value),
         'alphaNumericString',

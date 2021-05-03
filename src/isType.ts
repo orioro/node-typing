@@ -75,17 +75,39 @@ export const _isType = (
       )
     }
     case OBJECT_TYPE: {
-      const expectedProperties = Object.keys(_expectedType.properties)
+      if (!isPlainObject(value)) {
+        return false
+      }
 
-      return (
-        isPlainObject(value) &&
-        Object.keys(value).every((property) =>
-          expectedProperties.includes(property)
-        ) &&
-        expectedProperties.every((property) =>
-          _isType(typeMap, _expectedType.properties[property], value[property])
-        )
+      const expectedProperties = Object.keys(_expectedType.properties)
+      const unknownProperties = _expectedType.unknownProperties
+
+      const _expectedPropertiesMatch = expectedProperties.every((property) =>
+        _isType(typeMap, _expectedType.properties[property], value[property])
       )
+
+      if (!unknownProperties) {
+        return (
+          _expectedPropertiesMatch &&
+          Object.keys(value).every((property) =>
+            expectedProperties.includes(property)
+          )
+        )
+      } else {
+        if (unknownProperties === true) {
+          return _expectedPropertiesMatch
+        } else {
+          return (
+            _expectedPropertiesMatch &&
+            Object.keys(value).every((property) => {
+              return (
+                expectedProperties.includes(property) ||
+                _isType(typeMap, unknownProperties, value[property])
+              )
+            })
+          )
+        }
+      }
     }
     default: {
       throw new Error(`Invalid type: ${stringifyTypeSpec(_expectedType)}`)
