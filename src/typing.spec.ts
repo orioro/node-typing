@@ -483,7 +483,7 @@ describe('typing(types)', () => {
           ['string', 123, false],
           ['number', 123, true],
           ['unknown_type', 123, new Error('Invalid type: unknown_type')],
-          [true, 123, new Error('Invalid type: true')],
+          [true, 123, new Error('Invalid typeSpec: `true`')],
         ],
         isType
       )

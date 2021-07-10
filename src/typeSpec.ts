@@ -181,19 +181,23 @@ export const objectType = (
  * @returns {TypeSpec | null}
  */
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export const castTypeSpec = (value: any): NonShorthandTypeSpec => {
-  if (isPlainObject(value)) {
-    if (typeof value.specType === 'string') {
-      return value
+export const castTypeSpec = (candidateTypeSpec: any): NonShorthandTypeSpec => {
+  if (isPlainObject(candidateTypeSpec)) {
+    if (typeof candidateTypeSpec.specType === 'string') {
+      return candidateTypeSpec
     } else {
-      return objectType(value)
+      return objectType(candidateTypeSpec)
     }
-  } else if (Array.isArray(value)) {
-    return oneOfTypes(value)
-  } else if (typeof value === 'string') {
-    return value === ANY_TYPE ? anyType() : singleType(value)
+  } else if (Array.isArray(candidateTypeSpec)) {
+    return oneOfTypes(candidateTypeSpec)
+  } else if (typeof candidateTypeSpec === 'string') {
+    return candidateTypeSpec === ANY_TYPE
+      ? anyType()
+      : singleType(candidateTypeSpec)
   } else {
-    throw new Error(`Invalid type: ${JSON.stringify(value)}`)
+    throw new Error(
+      `Invalid typeSpec: \`${JSON.stringify(candidateTypeSpec)}\``
+    )
   }
 }
 
