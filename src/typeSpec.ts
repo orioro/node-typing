@@ -1,23 +1,23 @@
 import { isPlainObject } from 'is-plain-object'
 import {
   PlainObject,
-  ANY_TYPE,
+  ANY_TYPE_SPEC,
   AnyTypeSpec,
-  SINGLE_TYPE,
+  SINGLE_TYPE_SPEC,
   SingleTypeSpec,
   SingleTypeSpecShorthand,
-  ONE_OF_TYPES,
+  ONE_OF_TYPES_SPEC,
   OneOfTypesSpec,
   OneOfTypesSpecShorthand,
-  ENUM_TYPE,
+  ENUM_TYPE_SPEC,
   EnumTypeSpec,
-  INDEFINITE_ARRAY_OF_TYPE,
+  INDEFINITE_ARRAY_OF_TYPE_SPEC,
   IndefiniteArrayOfTypeSpec,
-  INDEFINITE_OBJECT_OF_TYPE,
+  INDEFINITE_OBJECT_OF_TYPE_SPEC,
   IndefiniteObjectOfTypeSpec,
-  TUPLE_TYPE,
+  TUPLE_TYPE_SPEC,
   TupleTypeSpec,
-  OBJECT_TYPE,
+  OBJECT_TYPE_SPEC,
   ObjectTypeSpec,
   ObjectTypeSpecShorthand,
   TypeSpec,
@@ -44,11 +44,11 @@ export const anyType = ({
     ? {
         ...metadata,
         not: castTypeSpec(not),
-        specType: ANY_TYPE,
+        specType: ANY_TYPE_SPEC,
       }
     : {
         ...metadata,
-        specType: ANY_TYPE,
+        specType: ANY_TYPE_SPEC,
       }
 
 /**
@@ -62,7 +62,7 @@ export const singleType = (
   metadata: PlainObject = {}
 ): SingleTypeSpec => ({
   ...metadata,
-  specType: SINGLE_TYPE,
+  specType: SINGLE_TYPE_SPEC,
   type,
 })
 
@@ -77,7 +77,7 @@ export const oneOfTypes = (
   metadata: PlainObject = {}
 ): OneOfTypesSpec => ({
   ...metadata,
-  specType: ONE_OF_TYPES,
+  specType: ONE_OF_TYPES_SPEC,
   types: types.map(castTypeSpec),
 })
 
@@ -92,7 +92,7 @@ export const enumType = (
   metadata: PlainObject = {}
 ): EnumTypeSpec => ({
   ...metadata,
-  specType: ENUM_TYPE,
+  specType: ENUM_TYPE_SPEC,
   values,
 })
 
@@ -107,7 +107,7 @@ export const indefiniteArrayOfType = (
   metadata: PlainObject = {}
 ): IndefiniteArrayOfTypeSpec => ({
   ...metadata,
-  specType: INDEFINITE_ARRAY_OF_TYPE,
+  specType: INDEFINITE_ARRAY_OF_TYPE_SPEC,
   itemType: castTypeSpec(itemType),
 })
 
@@ -122,7 +122,7 @@ export const indefiniteObjectOfType = (
   metadata: PlainObject = {}
 ): IndefiniteObjectOfTypeSpec => ({
   ...metadata,
-  specType: INDEFINITE_OBJECT_OF_TYPE,
+  specType: INDEFINITE_OBJECT_OF_TYPE_SPEC,
   propertyType: castTypeSpec(propertyType),
 })
 
@@ -137,7 +137,7 @@ export const tupleType = (
   metadata: PlainObject = {}
 ): TupleTypeSpec => ({
   ...metadata,
-  specType: TUPLE_TYPE,
+  specType: TUPLE_TYPE_SPEC,
   items: items.map(castTypeSpec),
 })
 
@@ -152,7 +152,7 @@ export const objectType = (
   { unknownProperties, ...metadata }: PlainObject = {}
 ): ObjectTypeSpec => ({
   ...metadata,
-  specType: OBJECT_TYPE,
+  specType: OBJECT_TYPE_SPEC,
   properties: Object.keys(properties).reduce(
     (acc, property) => ({
       ...acc,
@@ -191,7 +191,7 @@ export const castTypeSpec = (candidateTypeSpec: any): NonShorthandTypeSpec => {
   } else if (Array.isArray(candidateTypeSpec)) {
     return oneOfTypes(candidateTypeSpec)
   } else if (typeof candidateTypeSpec === 'string') {
-    return candidateTypeSpec === ANY_TYPE
+    return candidateTypeSpec === ANY_TYPE_SPEC
       ? anyType()
       : singleType(candidateTypeSpec)
   } else {
@@ -205,23 +205,23 @@ export const stringifyTypeSpec = (typeSpec: TypeSpec): string => {
   const _typeSpec = castTypeSpec(typeSpec)
 
   switch (_typeSpec.specType) {
-    case ANY_TYPE:
+    case ANY_TYPE_SPEC:
       return _typeSpec.not === undefined
         ? 'any'
         : `any!${stringifyTypeSpec(_typeSpec.not)}`
-    case SINGLE_TYPE:
+    case SINGLE_TYPE_SPEC:
       return _typeSpec.type
-    case ONE_OF_TYPES:
+    case ONE_OF_TYPES_SPEC:
       return _typeSpec.types.map(stringifyTypeSpec).join(' | ')
-    case ENUM_TYPE:
+    case ENUM_TYPE_SPEC:
       return `${_typeSpec.values.join(', ')}`
-    case INDEFINITE_ARRAY_OF_TYPE:
+    case INDEFINITE_ARRAY_OF_TYPE_SPEC:
       return `${stringifyTypeSpec(_typeSpec.itemType)}[]`
-    case INDEFINITE_OBJECT_OF_TYPE:
+    case INDEFINITE_OBJECT_OF_TYPE_SPEC:
       return `${stringifyTypeSpec(_typeSpec.propertyType)}{}`
-    case TUPLE_TYPE:
+    case TUPLE_TYPE_SPEC:
       return `[${_typeSpec.items.map(stringifyTypeSpec).join(', ')}]`
-    case OBJECT_TYPE: {
+    case OBJECT_TYPE_SPEC: {
       return `{ ${Object.keys(_typeSpec.properties).join(', ')} }`
     }
     default:
