@@ -5,7 +5,6 @@ import { _getType } from './getType'
 import { stringifyTypeSpec } from './typeSpec'
 
 /**
- * @todo validateType User jest-diff module to output error messages
  * @function _validateType
  * @private
  */
@@ -20,8 +19,8 @@ export const _validateType = (
 
     throw new TypeError(
       `Expected \`${stringifyTypeSpec(expectedType)}\` but got \`${
-        actualType === undefined ? 'unknwown' : actualType
-      }\`: ${JSON.stringify(value)}`
+        actualType === undefined ? 'unknwown_type' : actualType
+      }\`: ${value}`
     )
   }
 }
