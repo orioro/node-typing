@@ -281,6 +281,39 @@ describe('validateType(objectTypeSpec, value)', () => {
       _renderLabel
     )
   })
+
+  describe('object constructors', () => {
+    const objectTypeSpec = objectType(
+      {
+        key1: 'string',
+        key2: ['number', 'string'],
+      },
+      {
+        objectMode: 'any-object',
+      }
+    )
+
+    function ConstructorA(props) {
+      Object.assign(this, props)
+    }
+
+    testCases(
+      [
+        [{ key1: '123', key2: 123 }, undefined],
+        [new ConstructorA({ key1: '123', key2: 123 }), undefined],
+        // Invalid key1
+        [{ key1: 123, key2: 123 }, TypeError],
+        [new ConstructorA({ key1: 123, key2: 123 }), TypeError],
+      ],
+      (value) => validateType(objectTypeSpec, value),
+      (args, result) =>
+        fnCallLabel(
+          'validateType',
+          [variableName('objectTypeSpec'), ...args],
+          result
+        )
+    )
+  })
 })
 
 describe('validateType(tupleType, value)', () => {
@@ -432,10 +465,8 @@ describe('getType(value)', () => {
   testCases(cases, getType)
 
   test('object from custom constructor', () => {
-    expect(() => {
-      function ConstructorA() {} // eslint-disable-line @typescript-eslint/no-empty-function
-      expect(getType(new ConstructorA())).toEqual('object')
-    }).toThrow('Could not identify value type: [object Object]')
+    function ConstructorA() {} // eslint-disable-line @typescript-eslint/no-empty-function
+    expect(getType(new ConstructorA())).toEqual(undefined)
   })
 })
 
@@ -498,7 +529,7 @@ describe('typing(types)', () => {
           ['abc123', 'alphaNumericString'],
           ['abc123-', 'string'],
           [123, 'number'],
-          [true, new Error('Could not identify value type: true')],
+          [true, undefined],
         ],
         getType
       )

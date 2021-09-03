@@ -13,8 +13,45 @@ import {
   INDEFINITE_OBJECT_OF_TYPE_SPEC,
   TUPLE_TYPE_SPEC,
   OBJECT_TYPE_SPEC,
+  ObjectTypeSpec,
   TypeMap,
 } from './types'
+
+const _objectMatchesShape = (
+  typeMap: TypeMap,
+  shape: ObjectTypeSpec,
+  value: any
+): boolean => {
+  const expectedProperties = Object.keys(shape.properties)
+  const unknownProperties = shape.unknownProperties
+
+  const _expectedPropertiesMatch = expectedProperties.every((property) =>
+    _isType(typeMap, shape.properties[property], value[property])
+  )
+
+  if (!unknownProperties) {
+    return (
+      _expectedPropertiesMatch &&
+      Object.keys(value).every((property) =>
+        expectedProperties.includes(property)
+      )
+    )
+  } else {
+    if (unknownProperties === true) {
+      return _expectedPropertiesMatch
+    } else {
+      return (
+        _expectedPropertiesMatch &&
+        Object.keys(value).every((property) => {
+          return (
+            expectedProperties.includes(property) ||
+            _isType(typeMap, unknownProperties, value[property])
+          )
+        })
+      )
+    }
+  }
+}
 
 /**
  * @function _isType
@@ -75,39 +112,14 @@ export const _isType = (
       )
     }
     case OBJECT_TYPE_SPEC: {
-      if (!isPlainObject(value)) {
-        return false
-      }
+      const isValidObject =
+        typeof _expectedType['constructor'] === 'function'
+          ? value instanceof _expectedType['constructor']
+          : _expectedType['constructor'] === 'any'
+          ? typeof value === 'object' && value !== null
+          : isPlainObject(value)
 
-      const expectedProperties = Object.keys(_expectedType.properties)
-      const unknownProperties = _expectedType.unknownProperties
-
-      const _expectedPropertiesMatch = expectedProperties.every((property) =>
-        _isType(typeMap, _expectedType.properties[property], value[property])
-      )
-
-      if (!unknownProperties) {
-        return (
-          _expectedPropertiesMatch &&
-          Object.keys(value).every((property) =>
-            expectedProperties.includes(property)
-          )
-        )
-      } else {
-        if (unknownProperties === true) {
-          return _expectedPropertiesMatch
-        } else {
-          return (
-            _expectedPropertiesMatch &&
-            Object.keys(value).every((property) => {
-              return (
-                expectedProperties.includes(property) ||
-                _isType(typeMap, unknownProperties, value[property])
-              )
-            })
-          )
-        }
-      }
+      return isValidObject && _objectMatchesShape(typeMap, _expectedType, value)
     }
     default: {
       throw new Error(`Invalid type: ${stringifyTypeSpec(_expectedType)}`)

@@ -5,6 +5,7 @@ import { _getType } from './getType'
 import { stringifyTypeSpec } from './typeSpec'
 
 /**
+ * @todo validateType User jest-diff module to output error messages
  * @function _validateType
  * @private
  */
@@ -15,11 +16,12 @@ export const _validateType = (
   value: any // eslint-disable-line @typescript-eslint/explicit-module-boundary-types
 ): void => {
   if (!_isType(typeMap, expectedType, value)) {
+    const actualType = _getType(typeAlternatives, value)
+
     throw new TypeError(
-      `Expected \`${stringifyTypeSpec(expectedType)}\` but got \`${_getType(
-        typeAlternatives,
-        value
-      )}\`: ${JSON.stringify(value)}`
+      `Expected \`${stringifyTypeSpec(expectedType)}\` but got \`${
+        actualType === undefined ? 'unknwown' : actualType
+      }\`: ${JSON.stringify(value)}`
     )
   }
 }
