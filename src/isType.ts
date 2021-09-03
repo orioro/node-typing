@@ -113,9 +113,9 @@ export const _isType = (
     }
     case OBJECT_TYPE_SPEC: {
       const isValidObject =
-        typeof _expectedType['constructor'] === 'function'
-          ? value instanceof _expectedType['constructor']
-          : _expectedType['constructor'] === 'any'
+        typeof _expectedType.instanceOf === 'function'
+          ? value instanceof _expectedType.instanceOf
+          : _expectedType.instanceOf === 'any'
           ? typeof value === 'object' && value !== null
           : isPlainObject(value)
 

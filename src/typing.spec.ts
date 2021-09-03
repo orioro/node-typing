@@ -282,37 +282,89 @@ describe('validateType(objectTypeSpec, value)', () => {
     )
   })
 
-  describe('object constructors', () => {
-    const objectTypeSpec = objectType(
-      {
-        key1: 'string',
-        key2: ['number', 'string'],
-      },
-      {
-        objectMode: 'any-object',
-      }
-    )
+  describe('custom object constructors', () => {
+    const objectShape = {
+      key1: 'string',
+      key2: ['number', 'string'],
+    }
 
     function ConstructorA(props) {
       Object.assign(this, props)
     }
 
-    testCases(
-      [
-        [{ key1: '123', key2: 123 }, undefined],
-        [new ConstructorA({ key1: '123', key2: 123 }), undefined],
-        // Invalid key1
-        [{ key1: 123, key2: 123 }, TypeError],
-        [new ConstructorA({ key1: 123, key2: 123 }), TypeError],
-      ],
-      (value) => validateType(objectTypeSpec, value),
-      (args, result) =>
-        fnCallLabel(
-          'validateType',
-          [variableName('objectTypeSpec'), ...args],
-          result
-        )
-    )
+    function ConstructorB(props) {
+      Object.assign(this, props)
+    }
+
+    const _label = (args, result) =>
+      fnCallLabel(
+        'validateType',
+        [variableName('objectTypeSpec'), ...args],
+        result
+      )
+
+    describe('plain-object (default)', () => {
+      testCases(
+        [
+          [{ key1: '123', key2: 123 }, undefined],
+          [new ConstructorA({ key1: '123', key2: 123 }), TypeError],
+          [new ConstructorB({ key1: '123', key2: 123 }), TypeError],
+          // Invalid key1
+          [{ key1: 123, key2: 123 }, TypeError],
+          [new ConstructorA({ key1: 123, key2: 123 }), TypeError],
+        ],
+        (value) =>
+          validateType(
+            objectType(objectShape, {
+              instanceOf: 'plain-object',
+            }),
+            value
+          ),
+        _label
+      )
+    })
+
+    describe('any', () => {
+      testCases(
+        [
+          [{ key1: '123', key2: 123 }, undefined],
+          [new ConstructorA({ key1: '123', key2: 123 }), undefined],
+          [new ConstructorB({ key1: '123', key2: 123 }), undefined],
+          // Invalid key1
+          [{ key1: 123, key2: 123 }, TypeError],
+          [new ConstructorA({ key1: 123, key2: 123 }), TypeError],
+        ],
+        (value) =>
+          validateType(
+            objectType(objectShape, {
+              instanceOf: 'any',
+            }),
+            value
+          ),
+        _label
+      )
+    })
+
+    describe('specific constructor Function', () => {
+      testCases(
+        [
+          [{ key1: '123', key2: 123 }, TypeError],
+          [new ConstructorA({ key1: '123', key2: 123 }), undefined],
+          [new ConstructorB({ key1: '123', key2: 123 }), TypeError],
+          // Invalid key1
+          [{ key1: 123, key2: 123 }, TypeError],
+          [new ConstructorA({ key1: 123, key2: 123 }), TypeError],
+        ],
+        (value) =>
+          validateType(
+            objectType(objectShape, {
+              instanceOf: ConstructorA,
+            }),
+            value
+          ),
+        _label
+      )
+    })
   })
 })
 

@@ -149,11 +149,11 @@ export const tupleType = (
  */
 export const objectType = (
   properties: ObjectTypeSpecShorthand,
-  { unknownProperties, constructor, ...metadata }: PlainObject = {}
+  { unknownProperties, instanceOf, ...metadata }: PlainObject = {}
 ): ObjectTypeSpec => ({
   ...metadata,
   specType: OBJECT_TYPE_SPEC,
-  constructor,
+  instanceOf,
   properties: Object.keys(properties).reduce(
     (acc, property) => ({
       ...acc,

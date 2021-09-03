@@ -64,7 +64,7 @@ export type TupleTypeSpec = PlainObject & {
 export const OBJECT_TYPE_SPEC = 'object'
 export type ObjectTypeSpec = PlainObject & {
   specType: 'object'
-  constructor: 'any' | any
+  instanceOf: 'any' | any
   properties: {
     [key: string]: NonShorthandTypeSpec
   }
